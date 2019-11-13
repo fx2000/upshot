@@ -38,7 +38,7 @@ router.put('/edit', isLoggedIn(), async (req, res, next) => {
   try {
     const user = await User.findById(id);
     if (user.id === req.session.currentUser._id) {
-      await User.findByIdAndUpdate(id,
+      const updateUser = await User.findByIdAndUpdate(id,
         {
           $set: {
             firstName: firstName,
@@ -48,6 +48,7 @@ router.put('/edit', isLoggedIn(), async (req, res, next) => {
           }
         }
       );
+      res.status(200).json(updateUser);
     } else {
       res.status(401).json(user);
     }

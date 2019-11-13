@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Issue = require('../models/Issue');
+const Comment = require('../models/Comment');
 
 // Auth middleware
 const { isLoggedIn } = require('../helpers/authMiddleware');
@@ -28,7 +29,78 @@ router.get('/:id', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-// Create Issue
+// Comment on Issue
+router.post('/:id/comment', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  const { content } = req.body;
+  const user = req.session.currentUser;
+  try {
+    const newComment = await Comment.create({
+      user: user._id,
+      issue: id,
+      content: content
+    });
+    res.status(200).json(newComment);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Follow Issue
+router.get('/:id/follow', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  const user = req.session.currentUser;
+  try {
+    const follow = await Issue.findByIdAndUpdate(id,
+      {
+        $push: {
+          followers: user._id
+        }
+      }
+    );
+    res.status(200).json(follow);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Takeover Issue
+router.get('/:id/takeover', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  const user = req.session.currentUser;
+  try {
+    const takeover = await Issue.findByIdAndUpdate(id,
+      {
+        $push: {
+          assignedTo: user._id
+        }
+      }
+    );
+    res.status(200).json(takeover);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Assign Issue
+router.post('/:id/assign', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  const user = req.body.id;
+  try {
+    const assign = await Issue.findByIdAndUpdate(id,
+      {
+        $push: {
+          assignedTo: user
+        }
+      }
+    );
+    res.status(200).json(assign);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Create Issue TODO: Attachments
 router.post('/create', isLoggedIn(), async (req, res, next) => {
   const {
     title,
@@ -54,10 +126,10 @@ router.post('/create', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-// Update Issue
-router.put('/edit', isLoggedIn(), async (req, res, next) => {
+// Update Issue TODO: Attachments
+router.put('/:id/edit', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
   const {
-    id,
     title,
     content,
     project,
@@ -68,7 +140,7 @@ router.put('/edit', isLoggedIn(), async (req, res, next) => {
   try {
     const issue = await Issue.findById(id);
     if (issue.creator._id === req.session.currentUser._id) {
-      await Issue.findByIdAndUpdate(id,
+      const updateIssue = await Issue.findByIdAndUpdate(id,
         {
           $set: {
             title: title,
@@ -80,6 +152,7 @@ router.put('/edit', isLoggedIn(), async (req, res, next) => {
           }
         }
       );
+      res.status(200).json(updateIssue);
     } else {
       res.status(401).json(issue);
       return;
@@ -95,10 +168,10 @@ router.get('/delete/:id', isLoggedIn(), async (req, res, next) => {
   try {
     const issue = await Issue.findById(id);
     if (issue.creator._id === req.session.currentUser._id) {
-      await Issue.findByIdAndUpdate(id,
+      const deleteIssue = await Issue.findByIdAndUpdate(id,
         { $set: { deleted: true } }
       );
-      res.status(200).json(issue);
+      res.status(200).json(deleteIssue);
       return;
     } else {
       res.status(401).json(issue);

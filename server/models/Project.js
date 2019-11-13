@@ -15,6 +15,10 @@ const projectSchema = new Schema({
     type: String,
     default: ''
   },
+  creator: {
+    type: ObjectId,
+    ref: 'User'
+  },
   issues: [{
     type: ObjectId,
     ref: 'Issue'
