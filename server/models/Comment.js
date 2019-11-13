@@ -5,11 +5,13 @@ const ObjectId = Schema.Types.ObjectId;
 const commentSchema = new Schema({
   user: {
     type: ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   issue: {
     type: ObjectId,
-    ref: 'Issue'
+    ref: 'Issue',
+    required: true
   },
   content: {
     type: String,

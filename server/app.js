@@ -8,9 +8,13 @@ const logger = require('morgan');
 
 const cors = require('cors');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
-const indexRouter = require('./routes/index');
+const issuesRouter = require('./routes/issues');
+const authRouter = require('./routes/auth');
+const usersRouter = require('./routes/users');
 
 // Open database connection
 mongoose
@@ -38,28 +42,47 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Allow frontend access to API (CORS)
-app.use(cors({
-  credentials: true,
-  origin: ['http://localhost:3000']
-}));
+app.use(
+  cors({
+    credentials: true,
+    origin: [process.env.PUBLIC_DOMAIN]
+  })
+);
+
+// Session middleware
+app.use(
+  session({
+    store: new MongoStore({
+      mongooseConnection: mongoose.connection,
+      ttl: 24 * 60 * 60 // 1 day
+    }),
+    secret: process.env.SECRET_SESSION,
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000
+    }
+  })
+);
 
 // Routes
-app.use('/', indexRouter);
+app.use('/auth', authRouter);
+app.use('/issues', issuesRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status).json(err.message);
 });
 
 module.exports = app;
