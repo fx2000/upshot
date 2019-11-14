@@ -1,15 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const Issue = require('../models/Issue');
+const Project = require('../models/Project');
 const Comment = require('../models/Comment');
+const User = require('../models/User');
 
-// Auth middleware
+// Middlewares
 const { isLoggedIn } = require('../helpers/authMiddleware');
+const uploadCloud = require('../helpers/cloudinary.js');
 
-// List issues
+// List issues TODO: Review autopopulate() plugin docs
 router.get('/', isLoggedIn(), async (req, res, next) => {
   try {
-    const issues = await Issue.find();
+    const issues = await Issue.find({ deleted: false })
+      .populate({
+        path: 'project',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'creator',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'assignedTo',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'followers',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'comments',
+        match: { deleted: false }
+      });
     res.status(200).json(issues);
     return;
   } catch (error) {
@@ -17,12 +40,40 @@ router.get('/', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-// Get Issue details
-router.get('/:id', isLoggedIn(), async (req, res, next) => {
-  const { id } = req.params;
+// Create Issue
+router.post('/create', isLoggedIn(), uploadCloud.single('attachments'), async (req, res, next) => {
+  const {
+    title,
+    content,
+    project,
+    priority
+  } = req.body;
+  const creator = req.session.currentUser._id;
   try {
-    const issue = await Issue.findById(id);
-    res.status(200).json(issue);
+    const newIssueDetails = {
+      title: title,
+      content: content,
+      project: project,
+      creator: creator,
+      priority: priority
+    };
+    // Check if the user included an attachment
+    if (req.file) {
+      newIssueDetails.attachments = req.file.url;
+    }
+    const newIssue = await Issue.create(newIssueDetails);
+    // Add new issue to the appropriate project
+    await Project.findByIdAndUpdate(project,
+      {
+        $push: { issues: newIssue._id }
+      }
+    );
+    await User.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $push: { issues: newIssue._id }
+      }
+    );
+    res.status(200).json(newIssue);
     return;
   } catch (error) {
     next(error);
@@ -33,14 +84,24 @@ router.get('/:id', isLoggedIn(), async (req, res, next) => {
 router.post('/:id/comment', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   const { content } = req.body;
-  const user = req.session.currentUser;
   try {
     const newComment = await Comment.create({
-      user: user._id,
+      user: req.session.currentUser._id,
       issue: id,
       content: content
     });
+    await Issue.findByIdAndUpdate(id,
+      {
+        $push: { comments: newComment._id }
+      }
+    );
+    await Issue.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $push: { comments: newComment._id }
+      }
+    );
     res.status(200).json(newComment);
+    return;
   } catch (error) {
     next(error);
   }
@@ -49,16 +110,46 @@ router.post('/:id/comment', isLoggedIn(), async (req, res, next) => {
 // Follow Issue
 router.get('/:id/follow', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
-  const user = req.session.currentUser;
   try {
     const follow = await Issue.findByIdAndUpdate(id,
       {
-        $push: {
-          followers: user._id
-        }
+        $addToSet: { followers: req.session.currentUser._id }
+      },
+      {
+        new: true
+      }
+    );
+    await User.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $addToSet: { following: id }
       }
     );
     res.status(200).json(follow);
+    return;
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Unfollow Issue
+router.get('/:id/unfollow', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const unfollow = await Issue.findByIdAndUpdate(id,
+      {
+        $pull: { followers: req.session.currentUser._id }
+      },
+      {
+        new: true
+      }
+    );
+    await User.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $pull: { following: id }
+      }
+    );
+    res.status(200).json(unfollow);
+    return;
   } catch (error) {
     next(error);
   }
@@ -67,16 +158,46 @@ router.get('/:id/follow', isLoggedIn(), async (req, res, next) => {
 // Takeover Issue
 router.get('/:id/takeover', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
-  const user = req.session.currentUser;
   try {
     const takeover = await Issue.findByIdAndUpdate(id,
       {
-        $push: {
-          assignedTo: user._id
-        }
+        $addToSet: { assignedTo: req.session.currentUser._id }
+      },
+      {
+        new: true
+      }
+    );
+    await User.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $addToSet: { assignedTo: id }
       }
     );
     res.status(200).json(takeover);
+    return;
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Release Issue
+router.get('/:id/release', isLoggedIn(), async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const release = await Issue.findByIdAndUpdate(id,
+      {
+        $pull: { assignedTo: req.session.currentUser._id }
+      },
+      {
+        new: true
+      }
+    );
+    await User.findByIdAndUpdate(req.session.currentUser._id,
+      {
+        $pull: { assignedTo: id }
+      }
+    );
+    res.status(200).json(release);
+    return;
   } catch (error) {
     next(error);
   }
@@ -85,76 +206,57 @@ router.get('/:id/takeover', isLoggedIn(), async (req, res, next) => {
 // Assign Issue
 router.post('/:id/assign', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
-  const user = req.body.id;
+  const user = req.body;
   try {
     const assign = await Issue.findByIdAndUpdate(id,
       {
-        $push: {
-          assignedTo: user
-        }
+        $addToSet: { assignedTo: user._id }
+      },
+      {
+        new: true
+      }
+    );
+    await User.findByIdAndUpdate(user._id,
+      {
+        $addToSet: { assignedTo: id }
       }
     );
     res.status(200).json(assign);
+    return;
   } catch (error) {
     next(error);
   }
 });
 
-// Create Issue TODO: Attachments
-router.post('/create', isLoggedIn(), async (req, res, next) => {
-  const {
-    title,
-    content,
-    project,
-    priority,
-    attachments
-  } = req.body;
-  const creator = req.session.currentUser._id;
-
-  try {
-    const newIssue = await Issue.create({
-      title: title,
-      content: content,
-      project: project,
-      creator: creator,
-      priority: priority,
-      attachments: attachments
-    });
-    res.status(200).json(newIssue);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Update Issue TODO: Attachments
-router.put('/:id/edit', isLoggedIn(), async (req, res, next) => {
+// Update Issue TODO: Check if file uploads are working correctly on update, they might be overwriting previous attachments
+router.put('/:id/update', isLoggedIn(), uploadCloud.single('attachments'), async (req, res, next) => {
   const { id } = req.params;
   const {
     title,
     content,
     project,
     priority,
-    status,
-    attachments
+    status
   } = req.body;
   try {
-    const issue = await Issue.findById(id);
+    let issue = await Issue.findById(id);
     if (issue.creator._id === req.session.currentUser._id) {
-      const updateIssue = await Issue.findByIdAndUpdate(id,
-        {
-          $set: {
-            title: title,
-            content: content,
-            project: project,
-            priority: priority,
-            status: status,
-            attachments: attachments
-          }
-        }
-      );
-      res.status(200).json(updateIssue);
+      issue = {
+        title: title,
+        content: content,
+        project: project,
+        priority: priority,
+        status: status
+      };
+      // Check if the user included a new attachment
+      if (req.file) {
+        issue.attachments.push(req.file.url);
+      }
+      await issue.save();
+      res.status(200).json(issue);
+      return;
     } else {
-      res.status(401).json(issue);
+      res.status(401).end("An issue can only be updated by it's creator");
       return;
     }
   } catch (error) {
@@ -163,20 +265,59 @@ router.put('/:id/edit', isLoggedIn(), async (req, res, next) => {
 });
 
 // Delete Issue
-router.get('/delete/:id', isLoggedIn(), async (req, res, next) => {
+router.get('/:id/delete', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   try {
     const issue = await Issue.findById(id);
-    if (issue.creator._id === req.session.currentUser._id) {
+    if (issue.creator._id.toString() === req.session.currentUser._id) {
       const deleteIssue = await Issue.findByIdAndUpdate(id,
-        { $set: { deleted: true } }
+        {
+          $set: { deleted: true }
+        },
+        {
+          new: true
+        }
       );
       res.status(200).json(deleteIssue);
       return;
     } else {
-      res.status(401).json(issue);
+      res.status(401).end("An issue can only be deleted by it's creator");
       return;
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get Issue details
+router.get('/:id', isLoggedIn(), async (req, res, next) => {
+  const {
+    id
+  } = req.params;
+  try {
+    const issue = await Issue.findById(id, { deleted: false })
+      .populate({
+        path: 'project',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'creator',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'assignedTo',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'followers',
+        match: { deleted: false }
+      })
+      .populate({
+        path: 'comments',
+        match: { deleted: false }
+      });
+    res.status(200).json(issue);
+    return;
   } catch (error) {
     next(error);
   }

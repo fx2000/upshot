@@ -16,6 +16,10 @@ const commentSchema = new Schema({
   content: {
     type: String,
     required: true
+  },
+  deleted: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

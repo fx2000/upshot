@@ -19,15 +19,19 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
-    min: 6
+    select: false
   },
-  image: {
+  avatar: {
     type: String,
-    default: ''
+    default: 'https://res.cloudinary.com/fx2000/image/upload/v1573725101/upshot/user-placeholder.png'
   },
   issues: [{
     type: ObjectId,
     ref: 'Issue'
+  }],
+  projects: [{
+    type: ObjectId,
+    ref: 'Project'
   }],
   comments: [{
     type: ObjectId,
@@ -36,10 +40,19 @@ const userSchema = new Schema({
   following: [{
     type: ObjectId,
     ref: 'Issue'
-  }]
+  }],
+  assignedTo: [{
+    type: ObjectId,
+    ref: 'Issue'
+  }],
+  deleted: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true
 });
 
 const User = mongoose.model('User', userSchema);
+
 module.exports = User;

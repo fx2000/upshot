@@ -12,9 +12,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
-const issuesRouter = require('./routes/issues');
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const issuesRouter = require('./routes/issues');
+const projectsRouter = require('./routes/projects');
+
 
 // Open database connection
 mongoose
@@ -66,9 +68,10 @@ app.use(
 );
 
 // Routes
-app.use('/auth', authRouter);
-app.use('/issues', issuesRouter);
-app.use('/users', usersRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/issues', issuesRouter);
+app.use('/api/projects', projectsRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

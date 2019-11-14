@@ -1,29 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const User = require('../models/User');
 
-// Auth middleware
+// Middlewares
 const {
   isLoggedIn,
   isNotLoggedIn
 } = require('../helpers/authMiddleware');
+const uploadCloud = require('../helpers/cloudinary.js');
 
 // Login
 router.post('/login', isNotLoggedIn(), async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne(
+      { email: email }
+    ).lean().select('+password');
     if (!user) {
-      next(createError(404));
+      res.status(404).end('Invalid email/password combination');
+      return;
     } else if (bcrypt.compareSync(password, user.password)) {
       req.session.currentUser = user;
+      delete user.password;
       res.status(200).json(user);
       return;
     } else {
-      next(createError(401));
+      res.status(401).end('Invalid email/password combination');
+      return;
     }
   } catch (error) {
     next(error);
@@ -31,30 +36,39 @@ router.post('/login', isNotLoggedIn(), async (req, res, next) => {
 });
 
 // Sign-up
-router.post('/signup', isNotLoggedIn(), async (req, res, next) => {
+router.post('/signup', isNotLoggedIn(), uploadCloud.single('avatar'), async (req, res, next) => {
   const {
     firstName,
     lastName,
     email,
-    password,
-    image
+    password
   } = req.body;
   try {
     const emailExists = await User.findOne({ email }, 'email');
-    if (emailExists) {
-      return next(createError(400));
-    } else {
+    if (!emailExists) {
       const salt = bcrypt.genSaltSync(saltRounds);
       const hashPass = bcrypt.hashSync(password, salt);
-      const newUser = await User.create({
+      const newUserDetails = {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        password: hashPass,
-        image: image
-      });
+        password: hashPass
+      };
+      // Check if user included a custom avatar
+      if (req.file) {
+        newUserDetails.avatar = req.file.url;
+      }
+      let newUser = await User.create(newUserDetails);
       req.session.currentUser = newUser;
+      newUser = {
+        ...newUser._doc,
+        password: undefined
+      };
       res.status(200).json(newUser);
+      return;
+    } else {
+      res.status(400).end('Email is already in use');
+      return;
     }
   } catch (error) {
     next(error);
@@ -62,9 +76,9 @@ router.post('/signup', isNotLoggedIn(), async (req, res, next) => {
 });
 
 // Log out
-router.post('logout', isLoggedIn(), (req, res, next) => {
+router.get('/logout', isLoggedIn(), (req, res, next) => {
   req.session.destroy();
-  res.status(204).send();
+  res.status(204).end();
 });
 
 module.exports = router;

@@ -55,7 +55,8 @@ const issueSchema = new Schema({
 });
 
 issueSchema.index({
-
+  title: 'text',
+  content: 'text'
 });
 
 const Issue = mongoose.model('Issue', issueSchema);
