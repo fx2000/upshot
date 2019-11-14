@@ -95,7 +95,7 @@ router.post('/:id/comment', isLoggedIn(), async (req, res, next) => {
         $push: { comments: newComment._id }
       }
     );
-    await Issue.findByIdAndUpdate(req.session.currentUser._id,
+    await User.findByIdAndUpdate(req.session.currentUser._id,
       {
         $push: { comments: newComment._id }
       }
@@ -206,17 +206,17 @@ router.get('/:id/release', isLoggedIn(), async (req, res, next) => {
 // Assign Issue
 router.post('/:id/assign', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
-  const user = req.body;
+  const { user } = req.body;
   try {
     const assign = await Issue.findByIdAndUpdate(id,
       {
-        $addToSet: { assignedTo: user._id }
+        $addToSet: { assignedTo: user }
       },
       {
         new: true
       }
     );
-    await User.findByIdAndUpdate(user._id,
+    await User.findByIdAndUpdate(user,
       {
         $addToSet: { assignedTo: id }
       }
@@ -240,7 +240,7 @@ router.put('/:id/update', isLoggedIn(), uploadCloud.single('attachments'), async
   } = req.body;
   try {
     let issue = await Issue.findById(id);
-    if (issue.creator._id === req.session.currentUser._id) {
+    if (issue.creator._id.toString() === req.session.currentUser._id) {
       issue = {
         title: title,
         content: content,
