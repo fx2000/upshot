@@ -4,6 +4,7 @@ const Issue = require('../models/Issue');
 const Project = require('../models/Project');
 const Comment = require('../models/Comment');
 const User = require('../models/User');
+const Attachment = require('../models/Attachment');
 
 // Middlewares
 const { isLoggedIn } = require('../helpers/authMiddleware');
@@ -32,6 +33,12 @@ router.get('/', isLoggedIn(), async (req, res, next) => {
       .populate({
         path: 'comments',
         match: { deleted: false }
+      })
+      .populate({
+        path: 'attachments',
+        match: {
+          deleted: false
+        }
       });
     res.status(200).json(issues);
     return;
@@ -57,11 +64,16 @@ router.post('/create', isLoggedIn(), uploadCloud.single('attachments'), async (r
       creator: creator,
       priority: priority
     };
+    const newIssue = await Issue.create(newIssueDetails);
     // Check if the user included an attachment
     if (req.file) {
-      newIssueDetails.attachments = req.file.url;
+      const newAttachment = {
+        url: req.file.url,
+        uploader: req.session.currentUser._id,
+        issue: newIssue._id
+      };
+      await Attachment.create(newAttachment);
     }
-    const newIssue = await Issue.create(newIssueDetails);
     // Add new issue to the appropriate project
     await Project.findByIdAndUpdate(project,
       {
@@ -229,7 +241,7 @@ router.post('/:id/assign', isLoggedIn(), async (req, res, next) => {
 });
 
 // Update Issue TODO: Check if file uploads are working correctly on update, they might be overwriting previous attachments
-router.put('/:id/update', isLoggedIn(), uploadCloud.single('attachments'), async (req, res, next) => {
+router.put('/:id/update', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   const {
     title,
@@ -239,21 +251,23 @@ router.put('/:id/update', isLoggedIn(), uploadCloud.single('attachments'), async
     status
   } = req.body;
   try {
-    let issue = await Issue.findById(id);
+    const issue = await Issue.findById(id);
     if (issue.creator._id.toString() === req.session.currentUser._id) {
-      issue = {
-        title: title,
-        content: content,
-        project: project,
-        priority: priority,
-        status: status
-      };
-      // Check if the user included a new attachment
-      if (req.file) {
-        issue.attachments.push(req.file.url);
-      }
-      await issue.save();
-      res.status(200).json(issue);
+      const updateIssue = await Issue.findOneAndUpdate(id,
+        {
+          $set: {
+            title: title,
+            content: content,
+            project: project,
+            priority: priority,
+            status: status
+          }
+        },
+        {
+          new: true
+        }
+      );
+      res.status(200).json(updateIssue);
       return;
     } else {
       res.status(401).end("An issue can only be updated by it's creator");

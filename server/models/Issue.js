@@ -44,7 +44,8 @@ const issueSchema = new Schema({
     ref: 'Comment'
   }],
   attachments: [{
-    type: String
+    type: ObjectId,
+    ref: 'Attachment'
   }],
   deleted: {
     type: Boolean,

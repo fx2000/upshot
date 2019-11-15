@@ -8,6 +8,7 @@ User
 Project
 Issue
 Comment
+Attachment
 
 ## Routes
 
@@ -42,3 +43,5 @@ Issues
 /api/issues/:id/assign
 /api/issues/:id/update
 /api/issues/:id/delete
+/api/issues/:id/add-attachment
+/api/issues/:id/remove-attachment
