@@ -19,7 +19,7 @@ router.post('/login', isNotLoggedIn(), async (req, res, next) => {
       { email: email }
     ).lean().select('+password');
     if (!user) {
-      res.status(404).end('Invalid email/password combination');
+      res.status(401).end('Invalid email/password combination');
       return;
     } else if (bcrypt.compareSync(password, user.password)) {
       req.session.currentUser = user;

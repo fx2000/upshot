@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-class Auth {
+class AuthService {
   constructor () {
     this.auth = axios.create({
-      baseURL: 'http://localhost:5000',
+      baseURL: process.env.REACT_APP_BASE_URL,
       withCredentials: true
     });
   }
@@ -21,8 +21,9 @@ class Auth {
         lastName,
         email,
         password
-      })
-      .then(({ data }) => data);
+      }).then(
+        ({ data }) => data
+      );
   }
 
   login (user) {
@@ -33,16 +34,17 @@ class Auth {
   }
 
   logout () {
-    return this.auth.post('/api/auth/logout', {})
-      .then((response) => response.data);
+    return this.auth.post('/api/auth/logout', {}).then(
+      ({ data }) => data
+    );
   }
 
   me () {
     return this.auth.get('/api/auth/me').then(
-      (response) => response.data
+      ({ data }) => data
     );
   }
 }
 
-const axiosRequestFunctions = new Auth();
-export default axiosRequestFunctions;
+const auth = new AuthService();
+export default auth;

@@ -18,7 +18,6 @@ const issuesRouter = require('./routes/issues');
 const projectsRouter = require('./routes/projects');
 const attachmentsRouter = require('./routes/attachments');
 
-
 // Open database connection
 mongoose
   .connect(process.env.MONGODB_URI, {

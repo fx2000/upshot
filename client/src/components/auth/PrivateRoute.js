@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { withAuth } from '../../lib/AuthProvider';
 
-const PrivateRoute = ({ component: Component, isLoggedin, ...rest }) => {
+function PrivateRoute ({ component: Component, isLoggedin, ...rest }) {
   return (
     <Route
       {...rest}
@@ -11,6 +11,6 @@ const PrivateRoute = ({ component: Component, isLoggedin, ...rest }) => {
       }
     />
   );
-};
+}
 
 export default withAuth(PrivateRoute);

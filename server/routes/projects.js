@@ -57,7 +57,7 @@ router.post('/create', isLoggedIn(), uploadCloud.single('image'), async (req, re
       res.status(200).json(newProject);
       return;
     } else {
-      res.status(400).end('That project name is already in use');
+      res.status(400).send('That project name is already in use');
     }
   } catch (error) {
     next(error);

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap components
@@ -10,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 
-const navbar = () => {
+const navbar = (props) => {
   return (
     <Navbar bg="light" expand="lg" sticky="top">
       <LinkContainer to="/">
@@ -28,14 +27,13 @@ const navbar = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <LinkContainer to="/"><Nav.Link>Home</Nav.Link></LinkContainer>
-          <LinkContainer to="/login"><Nav.Link>Log In</Nav.Link></LinkContainer>
-          <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+          <NavDropdown title="Menu" id="basic-nav-dropdown">
+            <LinkContainer to='/issues'><NavDropdown.Item>Issues</NavDropdown.Item></LinkContainer>
+            <LinkContainer to='/projects'><NavDropdown.Item>Projects</NavDropdown.Item></LinkContainer>
+            <LinkContainer to='/users'><NavDropdown.Item>Users</NavDropdown.Item></LinkContainer>
             <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+            <LinkContainer to="/login"><NavDropdown.Item>Sign In</NavDropdown.Item></LinkContainer>
+            <LinkContainer to='/logout'><NavDropdown.Item onClick={props.logout}>Sign Out</NavDropdown.Item></LinkContainer>
           </NavDropdown>
         </Nav>
         <Form inline>

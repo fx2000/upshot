@@ -11,3 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.main {
+  padding-top: 30px;
+}
+
+.sidebar {
+  color: red;
+}
+
+.table {
+  margin-top: 20px;
+}

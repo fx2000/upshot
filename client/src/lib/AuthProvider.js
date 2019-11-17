@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { Component} from 'react';
 import auth from './auth-service';
 
 const { Consumer, Provider } = React.createContext();
 
 // Consumer
 const withAuth = (WrappedComponent) => {
-  return class extends React.Component {
+  return class extends Component {
     render () {
       return (
         <Consumer>
@@ -30,7 +30,7 @@ const withAuth = (WrappedComponent) => {
 };
 
 // Provider
-class AuthProvider extends React.Component {
+class AuthProvider extends Component {
   state = {
     isLoggedin: false,
     user: null,
@@ -95,9 +95,18 @@ class AuthProvider extends React.Component {
     const { login, logout, signup } = this;
 
     return isLoading ? (
-      <div>Loading...</div>
+      <div> { /* TODO: Better loading screen */ }
+        <img
+          alt=""
+          src="assets/img/arrow.png"
+          width="30"
+          height="30"
+          className="d-inline-block align-top"
+        />
+        Loading...
+      </div>
     ) : (
-      <Provider value={( isLoggedin, user, login, logout, signup )}>
+      <Provider value={{ isLoggedin, user, login, logout, signup }}>
         {this.props.children}
       </Provider>
     );
