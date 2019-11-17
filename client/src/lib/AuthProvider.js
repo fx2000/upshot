@@ -1,7 +1,7 @@
-import React from "react";
-import auth from "./auth-service";
+import React from 'react';
+import auth from './auth-service';
 
-const { Consumer, Provider } = React.createContext;
+const { Consumer, Provider } = React.createContext();
 
 // Consumer
 const withAuth = (WrappedComponent) => {

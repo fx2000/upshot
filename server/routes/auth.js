@@ -75,6 +75,12 @@ router.post('/signup', isNotLoggedIn(), uploadCloud.single('avatar'), async (req
   }
 });
 
+// Me
+router.get('/me', isLoggedIn(), (req, res, next) => {
+  req.session.currentUser.password = undefined;
+  res.json(req.session.currentUser);
+});
+
 // Log out
 router.get('/logout', isLoggedIn(), (req, res, next) => {
   req.session.destroy();

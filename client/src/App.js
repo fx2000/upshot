@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route } from 'react-router-dom';
 
 // Authentication Middleware
-import AuthProvider from "./lib/AuthProvider";
-import AnonRoute from "./components/auth/AnonRoute";
-import PrivateRoute from "./components/auth/PrivateRoute";
+import AuthProvider from './lib/AuthProvider';
+import AnonRoute from './components/auth/AnonRoute';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 // Components
 import Navbar from './components/navbar/Navbar';
@@ -26,6 +26,7 @@ class App extends Component {
           <Switch>
             <AnonRoute path="/signup" component={Signup} />
             <AnonRoute path="/login" component={Login} />
+
           </Switch>
         </div>
       </AuthProvider>

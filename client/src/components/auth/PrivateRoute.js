@@ -1,6 +1,6 @@
 import React from 'react';
-import { Route, Redirect } from "react-router-dom";
-import { withAuth } from '../lib/AuthProvider';
+import { Route, Redirect } from 'react-router-dom';
+import { withAuth } from '../../lib/AuthProvider';
 
 const PrivateRoute = ({ component: Component, isLoggedin, ...rest }) => {
   return (

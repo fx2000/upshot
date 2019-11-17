@@ -36,6 +36,12 @@ class Auth {
     return this.auth.post('/api/auth/logout', {})
       .then((response) => response.data);
   }
+
+  me () {
+    return this.auth.get('/api/auth/me').then(
+      (response) => response.data
+    );
+  }
 }
 
 const axiosRequestFunctions = new Auth();
