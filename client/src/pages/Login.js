@@ -3,9 +3,12 @@ import { Link } from 'react-router-dom';
 import { withAuth } from '../lib/AuthProvider';
 
 // Bootstrap Components
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
+import {
+  Form,
+  Button,
+  Alert,
+  Modal
+} from 'react-bootstrap';
 
 class Login extends Component {
   state = {
@@ -35,48 +38,58 @@ class Login extends Component {
   render () {
     const { email, password, errors } = this.state;
     return (
-      <Form onSubmit={this.handleFormSubmit}>
-        <Form.Group controlId="email">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            name="email"
-            value={email}
-            onChange={this.handleChange}
-            autoComplete="email"
-            required
-          />
-        </Form.Group>
+      <Modal.Dialog>
+        <Modal.Header closeButton>
+          <Modal.Title>Sign In</Modal.Title>
+        </Modal.Header>
 
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            name="password"
-            value={password}
-            onChange={this.handleChange}
-            autoComplete="password"
-          />
-        </Form.Group>
+        <Modal.Body>
+          <Form onSubmit={this.handleFormSubmit} id="login">
+            <Form.Group controlId="email">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={email}
+                onChange={this.handleChange}
+                autoComplete="email"
+                required
+              />
+            </Form.Group>
 
-        <Form.Group controlId="rememberMe">
-          <Form.Check type="checkbox" label="Remember Me" />
-        </Form.Group>
+            <Form.Group controlId="password">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                name="password"
+                value={password}
+                onChange={this.handleChange}
+                autoComplete="password"
+              />
+            </Form.Group>
 
-        {
-          errors && (
-            <Alert variant="danger" dismissible>
-              <p>{ errors }</p>
-            </Alert>
-          )
-        }
+            <Form.Group controlId="rememberMe">
+              <Form.Check type="checkbox" label="Remember Me" />
+            </Form.Group>
 
-        <Link to="/signup"><p>Not a member? Sign up...</p></Link>
-        
-        <Button variant="primary" type="submit" disabled={!email || !password}>
-          Submit
-        </Button>
-      </Form>
+            {
+              errors && (
+                <Alert variant="danger" dismissible>
+                  <p>{ errors }</p>
+                </Alert>
+              )
+            }
+
+          </Form>
+          <Link to="/signup"><p>Not a member? Sign up...</p></Link>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="primary" form="login" type="submit" disabled={!email || !password}>
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal.Dialog>
     );
   }
 }

@@ -10,7 +10,7 @@ class ProjectService {
 
   list () {
     return this.project.get('/api/projects').then(
-      ({ data }) => data
+      response => response
     );
   }
 
@@ -21,7 +21,7 @@ class ProjectService {
         name,
         description
       }).then(
-        ({ data }) => data
+        response => response
       );
   }
 
@@ -36,21 +36,20 @@ class ProjectService {
         name,
         description
       }).then(
-        ({ data }) => data
+        response => response
       );
   }
 
   delete (project) {
     const { id } = project;
-    return this.project.get('/api/' + id + '/delete').then(
-      ({ data }) => data
+    return this.project.get('/api/projects/' + id + '/delete').then(
+      response => response
     );
   }
 
-  details (project) {
-    const { id } = project;
-    return this.project.get('/api/' + id).then(
-      ({ data }) => data
+  details (projectId) {
+    return this.project.get('/api/projects/' + projectId).then(
+      response => response
     );
   }
 }

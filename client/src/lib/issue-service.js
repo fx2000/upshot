@@ -10,7 +10,7 @@ class IssueService {
 
   list () {
     return this.issue.get('/api/issues').then(
-      ({ data }) => data
+      response => response
     );
   }
 
@@ -28,7 +28,7 @@ class IssueService {
         project,
         priority
       }).then(
-        ({ data }) => data
+        response => response
       );
   }
 
@@ -49,21 +49,20 @@ class IssueService {
         priority,
         status
       }).then(
-        ({ data }) => data
+        response => response
       );
   }
 
   delete (issue) {
     const { id } = issue;
-    return this.issue.get('/api/' + id + '/delete').then(
-      ({ data }) => data
+    return this.issue.get('/api/issues/' + id + '/delete').then(
+      response => response
     );
   }
 
-  details (issue) {
-    const { id } = issue;
-    return this.issue.get('/api/' + id).then(
-      ({ data }) => data
+  details (id) {
+    return this.issue.get('/api/issues/' + id).then(
+      response => response
     );
   }
 
@@ -76,14 +75,14 @@ class IssueService {
       .post('/api/issues/' + id + '/comment', {
         content
       }).then(
-        ({ data }) => data
+        response => response
       );
   }
 
   follow (issue) {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/follow').then(
-      ({ data }) => data
+      response => response
     );
   }
 

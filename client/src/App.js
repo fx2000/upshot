@@ -9,16 +9,23 @@ import PrivateRoute from './components/auth/PrivateRoute';
 // Components
 import Navbar from './components/navbar/Navbar';
 import Sidebar from './components/sidebar/Sidebar';
+
+// Pages
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Issues from './pages/Issues';
-import Projects from './pages/Projects';
-import CreateProject from './components/project/CreateProject';
+import Issues from './pages/issues/Issues';
+import CreateIssue from './pages/issues/CreateIssue';
+import ViewIssue from './pages/issues/ViewIssue';
+import Projects from './pages/projects/Projects';
+import CreateProject from './pages/projects/CreateProject';
+import ViewProject from './pages/projects/ViewProject';
 
 // Bootstrap Components
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import {
+  Container,
+  Row,
+  Col
+} from 'react-bootstrap';
 
 class App extends Component {
   render () {
@@ -32,11 +39,15 @@ class App extends Component {
             </Col>
             <Col sm={10}>
               <Switch>
-                <AnonRoute path="/signup" component={Signup} />
-                <AnonRoute path="/login" component={Login} />
-                <PrivateRoute path="/issues" component={Issues} />
-                <PrivateRoute path="/projects" component={Projects} />
-                <PrivateRoute path="/create-project" component={CreateProject} />
+                <AnonRoute exact path="/signup" component={Signup} />
+                <AnonRoute exact path="/login" component={Login} />
+                <PrivateRoute exact path="/issues" component={Issues} />
+                <PrivateRoute exact path="/issues/create" component={CreateIssue} />
+                <PrivateRoute exact path="/issues/:id" component={ViewIssue} />
+                <PrivateRoute exact path="/projects" component={Projects} />
+                <PrivateRoute exact path="/projects/create" component={CreateProject} />
+                <PrivateRoute exact path="/projects/:id" component={ViewProject} />
+
               </Switch>
             </Col>
           </Row>

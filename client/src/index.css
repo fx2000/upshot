@@ -17,9 +17,33 @@ code {
 }
 
 .sidebar {
-  color: red;
+  height: 100vh;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .table {
   margin-top: 20px;
+}
+
+.details {
+  margin-top: 20px;
+}
+
+.list-image {
+  height: 70px;
+  width: auto;
+}
+
+.project-image {
+  padding-right: 20px;
+  height: 200px;
+  width: auto;
+}
+
+.project-details {
+  padding-top: 15px;
+}
+
+.issue-details {
+  padding-top: 15px;
 }

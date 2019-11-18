@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import projects from '../lib/project-service';
-import Project from '../components/project/Project';
+import projects from '../../lib/project-service';
+import ProjectListItem from '../../components/project/ProjectListItem';
 import { Link } from 'react-router-dom';
-import { withAuth } from '../lib/AuthProvider';
+import { withAuth } from '../../lib/AuthProvider';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap Components
-import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Table from 'react-bootstrap/Table';
+import {
+  Breadcrumb,
+  Container,
+  Row,
+  Table
+} from 'react-bootstrap';
 
 class Projects extends Component {
   constructor () {
@@ -43,13 +45,13 @@ class Projects extends Component {
           <h2>Projects</h2>
         </Row>
         <Row>
-          <Link to="/create-project">Create Project</Link>
+          <Link to="/projects/create">Create Project</Link>
         </Row>
         <Row>
           <Table responsive className="table">
             <thead>
               <tr>
-                <th>#</th>
+                <th></th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Issues</th>
@@ -59,11 +61,14 @@ class Projects extends Component {
             <tbody>
               {
                 this.state.projects.map((project, index) =>
-                  <Project
+                  <ProjectListItem
                     key = { index }
+                    id = { project._id }
                     name = { project.name }
+                    image = { project.image }
                     description = { project.description }
-                    creator = { project.creator.firstName + ' ' + project.creator.lastName}
+                    creatorName = { project.creator.firstName + ' ' + project.creator.lastName}
+                    creatorId = { project.creator._id }
                     issues = {project.issues.length}
                   />
                 )

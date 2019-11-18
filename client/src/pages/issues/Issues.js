@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import issues from '../lib/issue-service';
-import Issue from '../components/issue/Issue';
+import issues from '../../lib/issue-service';
+import IssueListItem from '../../components/issue/IssueListItem';
 import { Link } from 'react-router-dom';
-import { withAuth } from '../lib/AuthProvider';
+import { withAuth } from '../../lib/AuthProvider';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap Components
-import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Table from 'react-bootstrap/Table';
+import {
+  Breadcrumb,
+  Container,
+  Row,
+  Table
+} from 'react-bootstrap';
 
 class Issues extends Component {
   constructor () {
@@ -43,13 +45,12 @@ class Issues extends Component {
           <h2>Issues</h2>
         </Row>
         <Row>
-          <Link to="/create-issue">Create Issue</Link>
+          <Link to="/issues/create">Create Issue</Link>
         </Row>
         <Row>
           <Table responsive className="table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>Priority</th>
                 <th>Status</th>
                 <th>Title</th>
@@ -64,13 +65,17 @@ class Issues extends Component {
             <tbody>
               {
                 this.state.issues.map((issue, index) =>
-                  <Issue
+                  <IssueListItem
                     key = { index }
+                    id = { issue._id }
                     priority = { issue.priority }
                     status = {issue.status}
                     title = { issue.title }
                     description = { issue.content }
-                    creator = { issue.creator.firstName + ' ' + issue.creator.lastName}
+                    projectId = { issue.project._id }
+                    projectName = { issue.project.name }
+                    creatorId = { issue.creator._id }
+                    creatorName = { issue.creator.firstName + ' ' + issue.creator.lastName}
                     assignedTo = { issue.assignedTo.firstName + ' ' + issue.assignedTo.lastName }
                     followers = { issue.followers.length }
                     comments = { issue.comments.length }

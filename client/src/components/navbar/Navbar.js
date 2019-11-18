@@ -2,12 +2,14 @@ import React from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap components
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
-import Button from 'react-bootstrap/Button';
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Form,
+  FormControl,
+  Button
+} from 'react-bootstrap';
 
 const navbar = (props) => {
   return (

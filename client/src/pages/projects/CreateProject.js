@@ -32,6 +32,14 @@ class CreateProject extends Component {
       description,
       image
     });
+
+    this.setState({
+      name: '',
+      description: '',
+      image: ''
+    });
+    // TODO: Fix redirect so it refreshes
+    this.props.history.push('/projects')
   }
 
   handleChange = (event) => {
@@ -48,11 +56,11 @@ class CreateProject extends Component {
     } = this.state;
 
     return (
-      <Container fluid={true}>
+      <Container fluid = { true }>
         <Row>
           <Breadcrumb>
-            <LinkContainer to="/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
-            <LinkContainer to="/projects"><Breadcrumb.Item>Projects</Breadcrumb.Item></LinkContainer>
+            <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
+            <LinkContainer to = "/projects"><Breadcrumb.Item>Projects</Breadcrumb.Item></LinkContainer>
             <Breadcrumb.Item active>Create Project</Breadcrumb.Item>
           </Breadcrumb>
         </Row>
@@ -60,40 +68,42 @@ class CreateProject extends Component {
           <h2>Create Project</h2>
         </Row>
         <Row>
-          <Form onSubmit={this.handleFormSubmit}>
+          <Form onSubmit = { this.handleFormSubmit }>
             <Form.Group controlId = "name" >
               <Form.Label>Name</Form.Label>
               <Form.Control
-                type="text"
-                name="name"
-                value={name}
-                onChange={this.handleChange}
-                autoComplete="given-name"
+                type = "text"
+                name = "name"
+                value = { name }
+                onChange = { this.handleChange }
                 required
               />
             </Form.Group>
 
-            < Form.Group controlId = "description" >
+            <Form.Group controlId = "description" >
               <Form.Label>Description</Form.Label>
               <Form.Control
-                type="text"
-                name="description"
-                value={description}
-                onChange={this.handleChange}
-                autoComplete = "family-name"
+                type = "text"
+                name = "description"
+                value = { description }
+                onChange = { this.handleChange }
                 required
               />
             </Form.Group>
+
+            {/* <Form.Group controlId = "image" >
+              <Form.Label>Project Image</Form.Label>
+            </Form.Group> */}
 
             {
               errors && (
-                <Alert variant="danger" dismissible>
+                <Alert variant = "danger" dismissible>
                   <p>{ errors }</p>
                 </Alert>
               )
             }
 
-            <Button variant="primary" type="submit" disabled={!name || !description}>
+            <Button variant="primary" type="submit" disabled = { !name || !description }>
               Submit
             </Button>
           </Form>
