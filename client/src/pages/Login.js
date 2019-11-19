@@ -7,15 +7,22 @@ import {
   Form,
   Button,
   Alert,
-  Modal
+  Modal,
+  Container,
+  Row,
+  Col,
+  Navbar
 } from 'react-bootstrap';
 
 class Login extends Component {
-  state = {
-    email: '',
-    password: '',
-    errors: ''
-  };
+  constructor () {
+    super();
+    this.state = {
+      email: '',
+      password: '',
+      errors: ''
+    };
+  }
 
   handleFormSubmit = (event) => {
     event.preventDefault();
@@ -44,6 +51,26 @@ class Login extends Component {
         </Modal.Header>
 
         <Modal.Body>
+          <Container>
+            <Row className="show-grid">
+              <Col xs={6} md={4}>
+              </Col>
+              <Col xs={6} md={4}>
+                <Navbar.Brand>
+                  <img
+                    alt=""
+                    src="assets/img/arrow.png"
+                    width="30"
+                    height="30"
+                    className="d-inline-block align-top"
+                  />{' '}
+                  upshot
+                </Navbar.Brand>
+              </Col>
+              <Col xs={6} md={4}>
+              </Col>
+            </Row>
+          </Container>
           <Form onSubmit={this.handleFormSubmit} id="login">
             <Form.Group controlId="email">
               <Form.Label>Email address</Form.Label>

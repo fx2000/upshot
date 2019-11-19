@@ -8,13 +8,13 @@ class IssueService {
     });
   }
 
-  list () {
+  list = () => {
     return this.issue.get('/api/issues').then(
       response => response
     );
   }
 
-  create (issue) {
+  create = (issue) => {
     const {
       title,
       content,
@@ -32,7 +32,7 @@ class IssueService {
       );
   }
 
-  update (issue) {
+  update = (issue) => {
     const {
       id,
       title,
@@ -53,61 +53,61 @@ class IssueService {
       );
   }
 
-  delete (issue) {
+  delete = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/delete').then(
       response => response
     );
   }
 
-  details (id) {
+  details = (id) => {
     return this.issue.get('/api/issues/' + id).then(
       response => response
     );
   }
 
-  comment (issue) {
+  comment = (comment) => {
     const {
-      id,
+      issue,
       content
-    } = issue;
+    } = comment;
     return this.issue
-      .post('/api/issues/' + id + '/comment', {
+      .post('/api/issues/' + issue + '/comment', {
         content
       }).then(
         response => response
       );
   }
 
-  follow (issue) {
+  follow = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/follow').then(
       response => response
     );
   }
 
-  unfollow (issue) {
+  unfollow = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/unfollow').then(
       ({ data }) => data
     );
   }
 
-  takeover (issue) {
+  takeover = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/takeover').then(
       ({ data }) => data
     );
   }
 
-  release (issue) {
+  release = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/release').then(
       ({ data }) => data
     );
   }
 
-  assign (issue) {
+  assign = (issue) => {
     const {
       id,
       user

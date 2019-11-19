@@ -2,23 +2,29 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuth } from '../lib/AuthProvider';
 
-
 // Bootstrap Components
 import {
   Form,
   Button,
   Alert,
-  Modal
+  Modal,
+  Container,
+  Row,
+  Col,
+  Navbar
 } from 'react-bootstrap';
 
 class Signup extends Component {
-  state = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    errors: ''
-  };
+  constructor () {
+    super();
+    this.state = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      errors: ''
+    };
+  }
 
   handleFormSubmit = (event) => {
     event.preventDefault();
@@ -58,6 +64,26 @@ class Signup extends Component {
         </Modal.Header>
 
         <Modal.Body>
+          <Container>
+            <Row className="show-grid">
+              <Col xs={6} md={4}>
+              </Col>
+              <Col xs={6} md={4}>
+                <Navbar.Brand>
+                  <img
+                    alt=""
+                    src="assets/img/arrow.png"
+                    width="30"
+                    height="30"
+                    className="d-inline-block align-top"
+                  />{' '}
+                  upshot
+                </Navbar.Brand>
+              </Col>
+              <Col xs={6} md={4}>
+              </Col>
+            </Row>
+          </Container>
           <Form onSubmit={this.handleFormSubmit} id="signup">
             <Form.Group controlId = "firstName" >
               <Form.Label>First Name</Form.Label>

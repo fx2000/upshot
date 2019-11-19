@@ -13,10 +13,11 @@ import {
   Row
 } from 'react-bootstrap';
 
-class CreateProject extends Component {
-  constructor () {
-    super();
+class UpdateProject extends Component {
+  constructor (props) {
+    super(props);
     this.state = {
+      id: this.props.match.params.id,
       name: '',
       description: '',
       image: '',
@@ -27,12 +28,14 @@ class CreateProject extends Component {
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
+      id,
       name,
       description,
       image
     } = this.state;
 
-    projects.create({
+    projects.update({
+      id,
       name,
       description,
       image
@@ -52,6 +55,20 @@ class CreateProject extends Component {
     this.setState({ [name]: value });
   }
 
+  componentDidMount () {
+    const { id } = this.props.match.params;
+    projects.details(id).then(
+      response => {
+        const project = response.data;
+        this.setState({
+          name: project.name,
+          description: project.description,
+          image: project.image
+        });
+      }
+    ).catch(error => console.log(error));
+  }
+
   render () {
     const {
       name,
@@ -66,11 +83,12 @@ class CreateProject extends Component {
           <Breadcrumb>
             <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
             <LinkContainer to = "/projects"><Breadcrumb.Item>Projects</Breadcrumb.Item></LinkContainer>
-            <Breadcrumb.Item active>Create Project</Breadcrumb.Item>
+            <LinkContainer to = { '/projects/' + this.state.id }><Breadcrumb.Item>{ this.state.name }</Breadcrumb.Item></LinkContainer>
+            <Breadcrumb.Item active>Update Project</Breadcrumb.Item>
           </Breadcrumb>
         </Row>
         <Row>
-          <h2>Create Project</h2>
+          <h2>Update Project</h2>
         </Row>
         <Row>
           <Form onSubmit = { this.handleFormSubmit }>
@@ -118,4 +136,4 @@ class CreateProject extends Component {
   }
 }
 
-export default withAuth(CreateProject);
+export default withAuth(UpdateProject);

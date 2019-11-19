@@ -16,9 +16,12 @@ import Login from './pages/Login';
 import Issues from './pages/issues/Issues';
 import CreateIssue from './pages/issues/CreateIssue';
 import ViewIssue from './pages/issues/ViewIssue';
+import CommentIssue from './pages/issues/CommentIssue';
+import UpdateIssue from './pages/issues/UpdateIssue';
 import Projects from './pages/projects/Projects';
 import CreateProject from './pages/projects/CreateProject';
 import ViewProject from './pages/projects/ViewProject';
+import UpdateProject from './pages/projects/UpdateProject';
 
 // Bootstrap Components
 import {
@@ -34,7 +37,7 @@ class App extends Component {
         <Navbar />
         <Container fluid={true} className="main">
           <Row>
-            <Col sm={2}>
+            <Col sm={2} className="sidebar">
               <Sidebar />
             </Col>
             <Col sm={10}>
@@ -44,10 +47,12 @@ class App extends Component {
                 <PrivateRoute exact path="/issues" component={Issues} />
                 <PrivateRoute exact path="/issues/create" component={CreateIssue} />
                 <PrivateRoute exact path="/issues/:id" component={ViewIssue} />
+                <PrivateRoute exact path="/issues/:id/comment" component={CommentIssue} />
+                <PrivateRoute exact path="/issues/:id/update" component={UpdateIssue} />
                 <PrivateRoute exact path="/projects" component={Projects} />
                 <PrivateRoute exact path="/projects/create" component={CreateProject} />
                 <PrivateRoute exact path="/projects/:id" component={ViewProject} />
-
+                <PrivateRoute exact path="/projects/:id/update" component={UpdateProject} />
               </Switch>
             </Col>
           </Row>

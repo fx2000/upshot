@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withAuth } from '../../lib/AuthProvider';
-import projects from '../../lib/project-service';
+import issues from '../../lib/issue-service';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap Components
@@ -13,13 +13,12 @@ import {
   Row
 } from 'react-bootstrap';
 
-class CreateProject extends Component {
-  constructor () {
-    super();
+class CommentIssue extends Component {
+  constructor (props) {
+    super(props);
     this.state = {
-      name: '',
-      description: '',
-      image: '',
+      issue: this.props.match.params.id,
+      content: '',
       errors: ''
     };
   }
@@ -27,24 +26,20 @@ class CreateProject extends Component {
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
-      name,
-      description,
-      image
+      issue,
+      content
     } = this.state;
 
-    projects.create({
-      name,
-      description,
-      image
+    issues.comment({
+      issue,
+      content
     });
 
     this.setState({
-      name: '',
-      description: '',
-      image: ''
+      content: ''
     });
     // TODO: Fix redirect so it refreshes
-    this.props.history.push('/projects')
+    this.props.history.push('/issues/' + this.state.issue);
   }
 
   handleChange = (event) => {
@@ -54,9 +49,7 @@ class CreateProject extends Component {
 
   render () {
     const {
-      name,
-      description,
-      image,
+      content,
       errors
     } = this.state;
 
@@ -65,40 +58,25 @@ class CreateProject extends Component {
         <Row>
           <Breadcrumb>
             <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
-            <LinkContainer to = "/projects"><Breadcrumb.Item>Projects</Breadcrumb.Item></LinkContainer>
-            <Breadcrumb.Item active>Create Project</Breadcrumb.Item>
+            <LinkContainer to = "/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
+            <Breadcrumb.Item active>Post Comment</Breadcrumb.Item>
           </Breadcrumb>
         </Row>
         <Row>
-          <h2>Create Project</h2>
+          <h2>Post Comment</h2>
         </Row>
         <Row>
           <Form onSubmit = { this.handleFormSubmit }>
-            <Form.Group controlId = "name" >
-              <Form.Label>Name</Form.Label>
+            <Form.Group controlId = "content" >
+              <Form.Label>Comment</Form.Label>
               <Form.Control
                 type = "text"
-                name = "name"
-                value = { name }
+                name = "content"
+                value = { content }
                 onChange = { this.handleChange }
                 required
               />
             </Form.Group>
-
-            <Form.Group controlId = "description" >
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                type = "text"
-                name = "description"
-                value = { description }
-                onChange = { this.handleChange }
-                required
-              />
-            </Form.Group>
-
-            {/* <Form.Group controlId = "image" >
-              <Form.Label>Project Image</Form.Label>
-            </Form.Group> */}
 
             {
               errors && (
@@ -108,7 +86,7 @@ class CreateProject extends Component {
               )
             }
 
-            <Button variant="primary" type="submit" disabled = { !name || !description }>
+            <Button variant="primary" type="submit" disabled = { !content }>
               Submit
             </Button>
           </Form>
@@ -118,4 +96,4 @@ class CreateProject extends Component {
   }
 }
 
-export default withAuth(CreateProject);
+export default withAuth(CommentIssue);

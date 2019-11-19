@@ -8,13 +8,13 @@ class ProjectService {
     });
   }
 
-  list () {
+  list = () => {
     return this.project.get('/api/projects').then(
       response => response
     );
   }
 
-  create (project) {
+  create = (project) => {
     const { name, description } = project;
     return this.project
       .post('/api/projects/create', {
@@ -25,7 +25,7 @@ class ProjectService {
       );
   }
 
-  update (project) {
+  update = (project) => {
     const {
       id,
       name,
@@ -40,14 +40,14 @@ class ProjectService {
       );
   }
 
-  delete (project) {
+  delete = (project) => {
     const { id } = project;
     return this.project.get('/api/projects/' + id + '/delete').then(
       response => response
     );
   }
 
-  details (projectId) {
+  details = (projectId) => {
     return this.project.get('/api/projects/' + projectId).then(
       response => response
     );

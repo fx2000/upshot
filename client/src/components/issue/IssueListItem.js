@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { withAuth } from '../../lib/AuthProvider';
 
 const Issue = (props) => {
   return (
@@ -17,4 +18,4 @@ const Issue = (props) => {
   );
 };
 
-export default Issue;
+export default withAuth(Issue);

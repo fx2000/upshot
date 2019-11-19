@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import issues from '../../lib/issue-service';
 import { withAuth } from '../../lib/AuthProvider';
 import { LinkContainer } from 'react-router-bootstrap';
+import IssueComments from '../../components/issue/IssueComments';
+import { Link } from 'react-router-dom';
 
 // Bootstrap Components
 import {
@@ -9,18 +11,19 @@ import {
   Tab,
   Breadcrumb,
   Container,
-  Row
+  Row,
+  Button
 } from 'react-bootstrap';
 
 class ViewIssue extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      issue: {}
+      issue: ''
     };
   }
 
-  componentDidMount () {
+  componentDidMount = () => {
     const { id } = this.props.match.params;
     issues.details(id).then(
       response => {
@@ -28,11 +31,62 @@ class ViewIssue extends Component {
         this.setState({
           issue: issue
         });
+        console.log(this.state.issue)
+        console.log(this.props.user)
       }
+      
     ).catch(error => console.log(error));
+    
   }
 
-  render () {
+  followIssue = () => {
+    const id = this.state.issue._id;
+    issues.follow({
+      id
+    });
+    console.log('Following!!')
+  }
+
+  unfollowIssue = () => {
+    const id = this.state.issue._id;
+    issues.unfollow({
+      id
+    });
+    console.log('Unfollowed!!')
+  }
+
+  takeoverIssue = () => {
+    const id = this.state.issue._id;
+    issues.takeover({
+      id
+    });
+    console.log('Takeover!!')
+  }
+
+  releaseIssue = () => {
+    const id = this.state.issue._id;
+    issues.release({
+      id
+    });
+    console.log('Released!!')
+  }
+
+  render = () => {
+    let update = false;
+    let following = false;
+    let assigned = false;
+    if (this.state.issue) {
+      if (this.props.user._id === this.state.issue.creator._id) { update = true }
+
+      this.props.user.following.forEach(issue => {
+        if (issue === this.state.issue._id) { following = true }
+      });
+
+      this.props.user.assignedTo.forEach(issue => {
+        if (issue === this.state.issue._id) { assigned = true }
+      });
+    }
+    
     return (
       <Container fluid={true}>
         <Row>
@@ -46,17 +100,50 @@ class ViewIssue extends Component {
           <h2>{this.state.issue.title}</h2>
         </Row>
         <Row>
-          <Container fluid={true}>
+          {
+            this.state.issue && update ? <LinkContainer to={ '/issues/' + this.state.issue._id + '/update' }><Button>Update</Button></LinkContainer> : null
+          }
+          {
+            this.state.issue && following ? <Button onClick={ this.unfollowIssue }>Unfollow</Button> : <Button onClick={ this.followIssue }>Follow</Button>
+          }
+          {
+            this.state.issue && assigned ? <Button onClick={ this.releaseIssue }>Release</Button> : <Button onClick={ this.takeoverIssue }>Takeover</Button>
+          }
+        </Row>
+        <Row>
+          <Container fluid = { true }>
             <Tabs defaultActiveKey="details" id="uncontrolled-tab-example" className="details">
               <Tab eventKey="details" title="Details">
-                <Container fluid={true} className="issue-details">
+                <Container fluid = { true } className="issue-details">
                   <Row>
                     {this.state.issue.content}
                   </Row>
                 </Container>
               </Tab>
               <Tab eventKey="comments" title="Comments">
-                TEST COMMENTS
+                <Container fluid = { true } className="issue-details">
+                  <Row>
+                    <LinkContainer to = { '/issues/' + this.state.issue._id + '/comment' }>
+                      <Button>Post New Comment</Button>
+                    </LinkContainer>
+                  </Row>
+                  <Row>
+                    <Container fluid = {true} className="comments">
+                      {
+                        this.state.issue.comments && this.state.issue.comments.map((comment, index) =>
+                          <IssueComments
+                            key = { index }
+                            id = { comment._id }
+                            commenterId = { comment.user._id }
+                            commenterName = { comment.user.firstName + ' ' + comment.user.lastName}
+                            avatar = { comment.user.avatar }
+                            content = { comment.content }
+                          />
+                        )
+                      }
+                    </Container>
+                  </Row>
+                </Container>
               </Tab>
             </Tabs>
           </Container>

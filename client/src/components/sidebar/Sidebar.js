@@ -3,8 +3,7 @@ import { LinkContainer } from 'react-router-bootstrap';
 
 // Bootstrap components
 import {
-  ListGroup,
-  Container
+  ListGroup
 } from 'react-bootstrap';
 
 const Sidebar = () => {

@@ -14,14 +14,16 @@ import {
   Row
 } from 'react-bootstrap';
 
-class CreateIssue extends Component {
-  constructor () {
-    super();
+class UpdateIssue extends Component {
+  constructor (props) {
+    super(props);
     this.state = {
+      id: this.props.match.params.id,
       title: '',
       content: '',
       project: '',
       priority: '',
+      status: '',
       errors: '',
       projects: []
     };
@@ -30,17 +32,21 @@ class CreateIssue extends Component {
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
+      id,
       title,
       content,
       project,
-      priority
+      priority,
+      status
     } = this.state;
 
-    issues.create({
+    issues.update({
+      id,
       title,
       content,
       project,
-      priority
+      priority,
+      status
     });
 
     this.setState({
@@ -50,7 +56,7 @@ class CreateIssue extends Component {
       priority: ''
     });
     // TODO: Fix redirect so it refreshes
-    this.props.history.push('/issues');
+    this.props.history.push('/issues/' + this.state.id);
   }
 
   handleChange = (event) => {
@@ -58,7 +64,7 @@ class CreateIssue extends Component {
     this.setState({ [name]: value });
   }
 
-  componentDidMount () {
+  componentDidMount = () => {
     // Get Projects
     projects.list().then(
       response => {
@@ -68,12 +74,29 @@ class CreateIssue extends Component {
         }
       }
     ).catch(error => console.log(error));
+
+    // Get issue data
+    const { id } = this.props.match.params;
+    issues.details(id).then(
+      response => {
+        const issue = response.data;
+        this.setState({
+          title: issue.title,
+          content: issue.content,
+          project: issue.project,
+          priority: issue.priority
+        });
+      }
+    ).catch(error => console.log(error));
   }
 
   render () {
     const {
       title,
       content,
+      project,
+      priority,
+      status,
       errors
     } = this.state;
 
@@ -83,11 +106,12 @@ class CreateIssue extends Component {
           <Breadcrumb>
             <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
             <LinkContainer to = "/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
-            <Breadcrumb.Item active>Create Issue</Breadcrumb.Item>
+            <LinkContainer to = { '/issues/' + this.state.id }><Breadcrumb.Item>{ this.state.title }</Breadcrumb.Item></LinkContainer>
+            <Breadcrumb.Item active>Update Issue</Breadcrumb.Item>
           </Breadcrumb>
         </Row>
         <Row>
-          <h2>Create Issue</h2>
+          <h2>Update Issue</h2>
         </Row>
         <Row>
           <Form onSubmit = {this.handleFormSubmit}>
@@ -124,14 +148,22 @@ class CreateIssue extends Component {
                 }
               </Form.Control>
             </Form.Group>
-
             <Form.Group controlId = "priority">
               <Form.Label>Priority</Form.Label>
-              <Form.Control as = "select" onChange = { this.handleChange } name = "priority" required>
+              <Form.Control as = "select" onChange = { this.handleChange } name = "priority" defaultValue={ priority } required>
                 <option value = "Low">Low</option>
                 <option value = "Medium">Medium</option>
                 <option value = "High">High</option>
                 <option value = "Critical">Critical</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId = "status">
+              <Form.Label>Status</Form.Label>
+              <Form.Control as = "select" onChange = { this.handleChange } name = "status" required>
+                <option value = "Open">Open</option>
+                <option value = "Closed">Closed</option>
+                <option value = "Re-Opened">Re-Opened</option>
               </Form.Control>
             </Form.Group>
 
@@ -153,4 +185,4 @@ class CreateIssue extends Component {
   }
 }
 
-export default withAuth(CreateIssue);
+export default withAuth(UpdateIssue);

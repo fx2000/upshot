@@ -8,7 +8,7 @@ class AuthService {
     });
   }
 
-  signup (user) {
+  signup = (user) => {
     const {
       firstName,
       lastName,
@@ -26,20 +26,20 @@ class AuthService {
       );
   }
 
-  login (user) {
+  login = (user) => {
     const { email, password } = user;
     return this.auth
       .post('/api/auth/login', { email, password })
       .then(({ data }) => data);
   }
 
-  logout () {
+  logout = () => {
     return this.auth.post('/api/auth/logout', {}).then(
       ({ data }) => data
     );
   }
 
-  me () {
+  me = () => {
     return this.auth.get('/api/auth/me').then(
       ({ data }) => data
     );

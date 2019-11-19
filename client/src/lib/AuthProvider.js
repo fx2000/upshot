@@ -31,13 +31,16 @@ const withAuth = (WrappedComponent) => {
 
 // Provider
 class AuthProvider extends Component {
-  state = {
-    isLoggedin: false,
-    user: null,
-    isLoading: true
-  };
+  constructor () {
+    super();
+    this.state = {
+      isLoggedin: false,
+      user: null,
+      isLoading: true
+    };
+  }
 
-  componentDidMount() {
+  componentDidMount () {
     auth
       .me()
       .then(
@@ -47,15 +50,18 @@ class AuthProvider extends Component {
           isLoading: false
         })
       ).catch(
-        err => this.setState({
-          isLoggedin: false,
-          user: null,
-          isLoading: false
-        })
+        err => {
+          this.setState({
+            isLoggedin: false,
+            user: null,
+            isLoading: false
+          });
+          console.log(err);
+        }
       );
   };
 
-  signup = user => {
+  signup = (user) => {
     const {
       firstName,
       lastName,
@@ -75,7 +81,7 @@ class AuthProvider extends Component {
       );
   };
 
-  login = user => {
+  login = (user) => {
     const { email, password } = user;
     auth
       .login({ email, password })
@@ -86,7 +92,7 @@ class AuthProvider extends Component {
   logout = () => {
     auth
       .logout()
-      .then( () => this.setState({ isLoggedin: false, user: null }))
+      .then(() => this.setState({ isLoggedin: false, user: null }))
       .catch(err => console.log(err));
   }
 
@@ -107,7 +113,7 @@ class AuthProvider extends Component {
       </div>
     ) : (
       <Provider value={{ isLoggedin, user, login, logout, signup }}>
-        {this.props.children}
+        { this.props.children }
       </Provider>
     );
   }

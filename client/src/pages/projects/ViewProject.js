@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import projects from '../../lib/project-service';
 import { withAuth } from '../../lib/AuthProvider';
 import { LinkContainer } from 'react-router-bootstrap';
+import { Link } from 'react-router-dom';
 import ProjectIssues from '../../components/project/ProjectIssues';
 
 // Bootstrap Components
@@ -10,7 +11,8 @@ import {
   Tab,
   Breadcrumb,
   Container,
-  Row
+  Row,
+  Button
 } from 'react-bootstrap';
 
 class ViewProject extends Component {
@@ -29,7 +31,6 @@ class ViewProject extends Component {
         this.setState({
           project: project
         });
-        console.log(this.state.project)
       }
     ).catch(error => console.log(error));
   }
@@ -46,6 +47,9 @@ class ViewProject extends Component {
         </Row>
         <Row>
           <h2>{this.state.project.name}</h2>
+        </Row>
+        <Row>
+          <Link to={ '/projects/' + this.state.project._id + '/update' }>Update Project</Link>
         </Row>
         <Row>
           <Container fluid={true}>
@@ -67,17 +71,26 @@ class ViewProject extends Component {
                 </Container>
               </Tab>
               <Tab eventKey="issues" title="Issues">
-                <ul>
-                  {
-                    this.state.project.issues && this.state.project.issues.map((issue, index) =>
-                      <ProjectIssues
-                        id = { issue._id }
-                        key = { index }
-                        title = { issue.title }
-                      />
-                    )
-                  }
-                </ul>
+                <Container fluid = { true } className="comments">
+                  <Row>
+                    <LinkContainer to = { '/issues/create' }>
+                      <Button>Create New Issue</Button>
+                    </LinkContainer>
+                  </Row>
+                  <Row>
+                    <ul>
+                      {
+                        this.state.project.issues && this.state.project.issues.map((issue, index) =>
+                          <ProjectIssues
+                            id = { issue._id }
+                            key = { index }
+                            title = { issue.title }
+                          />
+                        )
+                      }
+                    </ul>
+                  </Row>
+                </Container>
               </Tab>
             </Tabs>
           </Container>
