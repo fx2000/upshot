@@ -20,13 +20,15 @@ router.get('/', isLoggedIn(), async (req, res, next) => {
 // Update user details
 router.put('/:id/update', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
+  const user = req.session.currentUser;
   const {
     firstName,
     lastName,
     email
   } = req.body;
   try {
-    if (id === req.session.currentUser._id) {
+    // Check if the user is the profile's owner
+    if (id === user._id) {
       // Check if email is already in use
       const emailExists = await User.findOne({ email }, 'email');
       if (!emailExists) {
@@ -57,16 +59,15 @@ router.put('/:id/update', isLoggedIn(), async (req, res, next) => {
 router.post('/:id/update-avatar', isLoggedIn(), uploadCloud.single('avatar'), async (req, res, next) => {
   const { id } = req.params;
   const avatar = req.file.url;
+  const user = req.session.currentUser;
   try {
-    if (id === req.session.currentUser._id) {
-      const updateUser = await User.findByIdAndUpdate(id,
-        {
-          $set: { avatar: avatar }
-        },
-        {
-          new: true
-        }
-      );
+    // Check if the user is the profile's owner
+    if (id === user._id) {
+      const updateUser = await User.findByIdAndUpdate(id, {
+        $set: { avatar: avatar }
+      }, {
+        new: true
+      });
       res.status(200).json(updateUser);
       return;
     } else {
@@ -81,16 +82,16 @@ router.post('/:id/update-avatar', isLoggedIn(), uploadCloud.single('avatar'), as
 // Revert to default avatar
 router.get('/:id/remove-avatar', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
+  const user = req.session.currentUser;
   try {
-    if (id === req.session.currentUser._id) {
-      const updateUser = await User.findByIdAndUpdate(id,
-        {
-          $set: { avatar: 'https://res.cloudinary.com/fx2000/image/upload/v1573725101/upshot/project-placeholder.png' }
-        },
-        {
-          new: true
-        }
-      );
+    // Check if the user is the profile's owner
+    if (id === user._id) {
+      const updateUser = await User.findByIdAndUpdate(id, {
+        // TODO: Find a better way to reset to the model's default value
+        $set: { avatar: 'https://res.cloudinary.com/fx2000/image/upload/v1573725101/upshot/project-placeholder.png' }
+      }, {
+        new: true
+      });
       res.status(200).json(updateUser);
       return;
     } else {
@@ -102,7 +103,7 @@ router.get('/:id/remove-avatar', isLoggedIn(), async (req, res, next) => {
   }
 });
 
-// Get user details
+// Get user details TODO: Review autopopulate plugin docs
 router.get('/:id', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
   try {

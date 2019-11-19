@@ -5,13 +5,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
+// Routes
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const issuesRouter = require('./routes/issues');
@@ -36,7 +36,6 @@ mongoose
   });
 
 const app = express();
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -74,18 +73,18 @@ app.use('/api/issues', issuesRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/attachments', attachmentsRouter);
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use((err, req, res, next) => {
-  // set locals, only providing error in development
+  // Set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Respond with error message
   res.status(err.status).json(err.message);
 });
 

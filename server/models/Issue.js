@@ -33,7 +33,7 @@ const issueSchema = new Schema({
   status: {
     type: String,
     default: 'Open',
-    enum: ['Open', 'Closed', 'Reopened', 'Deleted']
+    enum: ['Open', 'Closed', 'Re-Opened']
   },
   followers: [{
     type: ObjectId,

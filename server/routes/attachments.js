@@ -11,12 +11,14 @@ const uploadCloud = require('../helpers/cloudinary.js');
 router.post('/add', isLoggedIn(), uploadCloud.single('attachment'), async (req, res, next) => {
   const { url } = req.file;
   const { id } = req.body;
+  const user = req.session.currentUser;
   try {
+    // Check is current user is the issue's creator
     const issue = await Issue.findById(id, { deleted: false });
-    if (issue.creator._id.toString() === req.session.currentUser._id) {
+    if (issue.creator._id.toString() === user._id) {
       const newAttachment = {
         url: url,
-        uploader: req.session.currentUser._id,
+        uploader: user._id,
         issue: id
       };
       await Attachment.create(newAttachment);
@@ -31,7 +33,7 @@ router.post('/add', isLoggedIn(), uploadCloud.single('attachment'), async (req, 
   }
 });
 
-// View Attatchment
+// View Attatchment TODO: Is this really necesary? YAGNI!
 router.get('/:id', isLoggedIn(), async (req, res, next) => {
   const id = req.params;
   try {
@@ -47,7 +49,9 @@ router.get('/:id', isLoggedIn(), async (req, res, next) => {
 router.get('/:id/delete', isLoggedIn(), async (req, res, next) => {
   const id = req.params;
   try {
+    // TODO: Check for a better way to Find and then Update if the condition is true
     const attachment = await Attachment.findById(id, { deleted: false })
+    // Check if the current user is the attachment's uploader
     if (attachment.uploader._id.toString() === req.session.currentUser._id) {
       const deleteAttachment = await Attachment.findByIdAndUpdate(id, {
         $set: {

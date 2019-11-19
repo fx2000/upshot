@@ -3,7 +3,7 @@ const router = express.Router();
 const Project = require('../models/Project');
 const User = require('../models/User');
 
-// Auth middleware
+// Middlewares
 const { isLoggedIn } = require('../helpers/authMiddleware');
 const uploadCloud = require('../helpers/cloudinary.js');
 
@@ -41,19 +41,16 @@ router.post('/create', isLoggedIn(), uploadCloud.single('image'), async (req, re
       newProjectDetails.image = req.file.url;
     }
     // Check if the name is taken by an active project
-    const projectExists = await Project.findOne(
-      {
-        name: name,
-        deleted: false
-      }
-    );
+    const projectExists = await Project.findOne({
+      name: name,
+      deleted: false
+    });
     if (!projectExists) {
       const newProject = await Project.create(newProjectDetails);
-      await User.findByIdAndUpdate(user._id,
-        {
-          $push: { projects: newProject._id }
-        }
-      );
+      // Add new project to the user's profile
+      await User.findByIdAndUpdate(user._id, {
+        $push: { projects: newProject._id }
+      });
       res.status(200).json(newProject);
       return;
     } else {
@@ -67,24 +64,24 @@ router.post('/create', isLoggedIn(), uploadCloud.single('image'), async (req, re
 // Update Project
 router.put('/:id/update', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
+  const user = req.session.currentUser;
   const {
     name,
     description
   } = req.body;
   try {
+    // TODO: Check for a better way to Find and then Update if the condition is true
     const project = await Project.findById(id);
-    if (project.creator.toString() === req.session.currentUser._id) {
-      const updateProject = await Project.findByIdAndUpdate(id,
-        {
-          $set: {
-            name: name,
-            description: description
-          }
-        },
-        {
-          new: true
+    // Check if the user is the project's creator
+    if (project.creator.toString() === user._id) {
+      const updateProject = await Project.findByIdAndUpdate(id, {
+        $set: {
+          name: name,
+          description: description
         }
-      );
+      }, {
+        new: true
+      });
       res.status(200).json(updateProject);
       return;
     } else {
@@ -99,17 +96,17 @@ router.put('/:id/update', isLoggedIn(), async (req, res, next) => {
 // Delete Project
 router.get('/:id/delete', isLoggedIn(), async (req, res, next) => {
   const { id } = req.params;
+  const user = req.session.currentUser;
   try {
+    // TODO: Check for a better way to Find and then Update if the condition is true
     const project = await Project.findById(id);
-    if (project.creator._id.toString() === req.session.currentUser._id) {
-      const deleteProject = await Project.findByIdAndUpdate(id,
-        {
-          $set: { deleted: true }
-        },
-        {
-          new: true
-        }
-      );
+    // Check if the user is the project's creator
+    if (project.creator._id.toString() === user._id) {
+      const deleteProject = await Project.findByIdAndUpdate(id, {
+        $set: { deleted: true }
+      }, {
+        new: true
+      });
       res.status(200).json(deleteProject);
       return;
     } else {
