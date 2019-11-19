@@ -78,15 +78,9 @@ class CommentIssue extends Component {
               />
             </Form.Group>
 
-            {
-              errors && (
-                <Alert variant = "danger" dismissible>
-                  <p>{ errors }</p>
-                </Alert>
-              )
-            }
+            {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
 
-            <Button variant="primary" type="submit" disabled = { !content }>
+            <Button variant="primary" type="submit" disabled = {!content}>
               Submit
             </Button>
           </Form>

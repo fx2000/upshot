@@ -24,6 +24,7 @@ class ViewProject extends Component {
   }
 
   componentDidMount () {
+    // Call project details API
     const { id } = this.props.match.params;
     projects.details(id).then(
       response => {

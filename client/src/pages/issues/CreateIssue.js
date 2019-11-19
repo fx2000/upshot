@@ -27,6 +27,7 @@ class CreateIssue extends Component {
     };
   }
 
+  // Form submit handler
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
@@ -53,13 +54,14 @@ class CreateIssue extends Component {
     this.props.history.push('/issues');
   }
 
+  // Form change handler
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
   }
 
   componentDidMount () {
-    // Get Projects
+    // Get Projects list
     projects.list().then(
       response => {
         const projects = response.data;
@@ -78,11 +80,11 @@ class CreateIssue extends Component {
     } = this.state;
 
     return (
-      <Container fluid = { true }>
+      <Container fluid={true}>
         <Row>
           <Breadcrumb>
-            <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
-            <LinkContainer to = "/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
+            <LinkContainer to="/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
+            <LinkContainer to="/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
             <Breadcrumb.Item active>Create Issue</Breadcrumb.Item>
           </Breadcrumb>
         </Row>
@@ -90,36 +92,36 @@ class CreateIssue extends Component {
           <h2>Create Issue</h2>
         </Row>
         <Row>
-          <Form onSubmit = {this.handleFormSubmit}>
-            <Form.Group controlId = "title" >
+          <Form onSubmit={this.handleFormSubmit}>
+            <Form.Group controlId="title" >
               <Form.Label>Title</Form.Label>
               <Form.Control
-                type = "text"
-                name = "title"
-                value = { title }
-                onChange = { this.handleChange }
+                type="text"
+                name="title"
+                value={title}
+                onChange={this.handleChange}
                 required
               />
             </Form.Group>
 
-            <Form.Group controlId = "content" >
+            <Form.Group controlId="content" >
               <Form.Label>Description</Form.Label>
               <Form.Control
-                type = "textarea"
-                rows = "10"
-                name = "content"
-                value = { content }
-                onChange = { this.handleChange }
+                type="textarea"
+                rows="10"
+                name="content"
+                value={content}
+                onChange={this.handleChange}
                 required
               />
             </Form.Group>
 
-            <Form.Group controlId = "project" >
+            <Form.Group controlId="project">
               <Form.Label>Project</Form.Label>
-              <Form.Control as = "select" onChange = { this.handleChange } name = "project" required>
+              <Form.Control as="select" onChange={this.handleChange} name="project" required>
                 {
                   this.state.projects && this.state.projects.map(project => (
-                    <option value = { project._id } key = { project._id }>{ project.name }</option>
+                    <option value={project._id} key={project._id}>{project.name}</option>
                   ))
                 }
               </Form.Control>
@@ -127,23 +129,17 @@ class CreateIssue extends Component {
 
             <Form.Group controlId = "priority">
               <Form.Label>Priority</Form.Label>
-              <Form.Control as = "select" onChange = { this.handleChange } name = "priority" required>
-                <option value = "Low">Low</option>
-                <option value = "Medium">Medium</option>
-                <option value = "High">High</option>
-                <option value = "Critical">Critical</option>
+              <Form.Control as="select" onChange={this.handleChange} name="priority" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
               </Form.Control>
             </Form.Group>
 
-            {
-              errors && (
-                <Alert variant = "danger" dismissible>
-                  <p>{ errors }</p>
-                </Alert>
-              )
-            }
+            {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
 
-            <Button variant="primary" type="submit" disabled = { !title || !content }>
+            <Button variant="primary" type="submit" disabled={!title || !content}>
               Submit
             </Button>
           </Form>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Project API
 class ProjectService {
   constructor () {
     this.project = axios.create({
@@ -8,14 +9,16 @@ class ProjectService {
     });
   }
 
+  // List projects
   list = () => {
     return this.project.get('/api/projects').then(
       response => response
     );
   }
 
+  // Create project
   create = (project) => {
-    const { name, description } = project;
+    const { name, description, file} = project;
     return this.project
       .post('/api/projects/create', {
         name,
@@ -25,6 +28,7 @@ class ProjectService {
       );
   }
 
+  // Update prject
   update = (project) => {
     const {
       id,
@@ -40,6 +44,7 @@ class ProjectService {
       );
   }
 
+  // Delete project
   delete = (project) => {
     const { id } = project;
     return this.project.get('/api/projects/' + id + '/delete').then(
@@ -47,6 +52,7 @@ class ProjectService {
     );
   }
 
+  // Get project details
   details = (projectId) => {
     return this.project.get('/api/projects/' + projectId).then(
       response => response

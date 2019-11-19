@@ -11,7 +11,7 @@ import {
   Button
 } from 'react-bootstrap';
 
-const navbar = (props) => {
+const navbar = () => {
   return (
     <Navbar bg="light" expand="lg" sticky="top">
       <LinkContainer to="/">
@@ -35,7 +35,8 @@ const navbar = (props) => {
             <LinkContainer to='/users'><NavDropdown.Item>Users</NavDropdown.Item></LinkContainer>
             <NavDropdown.Divider />
             <LinkContainer to="/login"><NavDropdown.Item>Sign In</NavDropdown.Item></LinkContainer>
-            <LinkContainer to='/logout'><NavDropdown.Item onClick={props.logout}>Sign Out</NavDropdown.Item></LinkContainer>
+            {/* TODO: Add logout call here */}
+            <NavDropdown.Item onClick="">Sign Out</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Form inline>

@@ -29,6 +29,7 @@ class UpdateIssue extends Component {
     };
   }
 
+  // Form submit handler
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
@@ -59,6 +60,7 @@ class UpdateIssue extends Component {
     this.props.history.push('/issues/' + this.state.id);
   }
 
+  // Form change handler
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
@@ -167,13 +169,7 @@ class UpdateIssue extends Component {
               </Form.Control>
             </Form.Group>
 
-            {
-              errors && (
-                <Alert variant = "danger" dismissible>
-                  <p>{ errors }</p>
-                </Alert>
-              )
-            }
+            {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
 
             <Button variant="primary" type="submit" disabled = { !title || !content }>
               Submit

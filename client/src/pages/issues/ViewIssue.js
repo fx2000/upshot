@@ -31,47 +31,45 @@ class ViewIssue extends Component {
         this.setState({
           issue: issue
         });
-        console.log(this.state.issue)
-        console.log(this.props.user)
       }
-      
     ).catch(error => console.log(error));
     
   }
 
+  // Call follow issue API
   followIssue = () => {
     const id = this.state.issue._id;
     issues.follow({
       id
     });
-    console.log('Following!!')
   }
 
+  // Call unfollow issue API
   unfollowIssue = () => {
     const id = this.state.issue._id;
     issues.unfollow({
       id
     });
-    console.log('Unfollowed!!')
   }
 
+  // Call takeover issue API
   takeoverIssue = () => {
     const id = this.state.issue._id;
     issues.takeover({
       id
     });
-    console.log('Takeover!!')
   }
 
+  // Call release issue API
   releaseIssue = () => {
     const id = this.state.issue._id;
     issues.release({
       id
     });
-    console.log('Released!!')
   }
 
   render = () => {
+    // Check user properties to define button rendering
     let update = false;
     let following = false;
     let assigned = false;
@@ -79,11 +77,11 @@ class ViewIssue extends Component {
       if (this.props.user._id === this.state.issue.creator._id) { update = true }
 
       this.props.user.following.forEach(issue => {
-        if (issue === this.state.issue._id) { following = true }
+        if (issue._id === this.state.issue._id) { following = true }
       });
 
       this.props.user.assignedTo.forEach(issue => {
-        if (issue === this.state.issue._id) { assigned = true }
+        if (issue._id === this.state.issue._id) { assigned = true }
       });
     }
     
@@ -99,36 +97,40 @@ class ViewIssue extends Component {
         <Row>
           <h2>{this.state.issue.title}</h2>
         </Row>
+        {/* Render buttons according to user's profile */}
         <Row>
           {
-            this.state.issue && update ? <LinkContainer to={ '/issues/' + this.state.issue._id + '/update' }><Button>Update</Button></LinkContainer> : null
+            this.state.issue && update ?
+              <LinkContainer to={'/issues/' + this.state.issue._id + '/update'}><Button>Update</Button></LinkContainer> : null
           }
           {
-            this.state.issue && following ? <Button onClick={ this.unfollowIssue }>Unfollow</Button> : <Button onClick={ this.followIssue }>Follow</Button>
+            this.state.issue && following ?
+              <Button onClick={this.unfollowIssue}>Unfollow</Button> : <Button onClick={this.followIssue}>Follow</Button>
           }
           {
-            this.state.issue && assigned ? <Button onClick={ this.releaseIssue }>Release</Button> : <Button onClick={ this.takeoverIssue }>Takeover</Button>
+            this.state.issue && assigned ?
+              <Button onClick={this.releaseIssue}>Release</Button> : <Button onClick={this.takeoverIssue}>Takeover</Button>
           }
         </Row>
         <Row>
-          <Container fluid = { true }>
+          <Container fluid={true}>
             <Tabs defaultActiveKey="details" id="uncontrolled-tab-example" className="details">
               <Tab eventKey="details" title="Details">
-                <Container fluid = { true } className="issue-details">
+                <Container fluid={true} className="issue-details">
                   <Row>
                     {this.state.issue.content}
                   </Row>
                 </Container>
               </Tab>
               <Tab eventKey="comments" title="Comments">
-                <Container fluid = { true } className="issue-details">
+                <Container fluid={true} className="issue-details">
                   <Row>
-                    <LinkContainer to = { '/issues/' + this.state.issue._id + '/comment' }>
+                    <LinkContainer to={'/issues/' + this.state.issue._id + '/comment'}>
                       <Button>Post New Comment</Button>
                     </LinkContainer>
                   </Row>
                   <Row>
-                    <Container fluid = {true} className="comments">
+                    <Container fluid={true} className="comments">
                       {
                         this.state.issue.comments && this.state.issue.comments.map((comment, index) =>
                           <IssueComments

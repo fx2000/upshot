@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Issue API
 class IssueService {
   constructor () {
     this.issue = axios.create({
@@ -8,12 +9,14 @@ class IssueService {
     });
   }
 
+  // List issues
   list = () => {
     return this.issue.get('/api/issues').then(
       response => response
     );
   }
 
+  // Create issue
   create = (issue) => {
     const {
       title,
@@ -32,6 +35,7 @@ class IssueService {
       );
   }
 
+  // Update issue
   update = (issue) => {
     const {
       id,
@@ -53,6 +57,7 @@ class IssueService {
       );
   }
 
+  // Delete issue
   delete = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/delete').then(
@@ -60,12 +65,14 @@ class IssueService {
     );
   }
 
+  // Get issue details
   details = (id) => {
     return this.issue.get('/api/issues/' + id).then(
       response => response
     );
   }
 
+  // New comment
   comment = (comment) => {
     const {
       issue,
@@ -79,6 +86,7 @@ class IssueService {
       );
   }
 
+  // Follow issue
   follow = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/follow').then(
@@ -86,6 +94,7 @@ class IssueService {
     );
   }
 
+  // Unfollow issue
   unfollow = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/unfollow').then(
@@ -93,6 +102,7 @@ class IssueService {
     );
   }
 
+  // Takeover issue
   takeover = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/takeover').then(
@@ -100,6 +110,7 @@ class IssueService {
     );
   }
 
+  // Release issue
   release = (issue) => {
     const { id } = issue;
     return this.issue.get('/api/issues/' + id + '/release').then(
@@ -107,6 +118,7 @@ class IssueService {
     );
   }
 
+  // Assign issue
   assign = (issue) => {
     const {
       id,

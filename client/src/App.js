@@ -10,6 +10,13 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import Navbar from './components/navbar/Navbar';
 import Sidebar from './components/sidebar/Sidebar';
 
+// Bootstrap Components
+import {
+  Container,
+  Row,
+  Col
+} from 'react-bootstrap';
+
 // Pages
 import Signup from './pages/Signup';
 import Login from './pages/Login';
@@ -22,13 +29,6 @@ import Projects from './pages/projects/Projects';
 import CreateProject from './pages/projects/CreateProject';
 import ViewProject from './pages/projects/ViewProject';
 import UpdateProject from './pages/projects/UpdateProject';
-
-// Bootstrap Components
-import {
-  Container,
-  Row,
-  Col
-} from 'react-bootstrap';
 
 class App extends Component {
   render () {

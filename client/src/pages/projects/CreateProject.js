@@ -96,9 +96,13 @@ class CreateProject extends Component {
               />
             </Form.Group>
 
-            {/* <Form.Group controlId = "image" >
+            <Form.Group controlId = "image" >
               <Form.Label>Project Image</Form.Label>
-            </Form.Group> */}
+              <Form.Control
+                type = "file"
+                name = "image"
+              />
+            </Form.Group>
 
             {
               errors && (

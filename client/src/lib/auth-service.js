@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Auth API
 class AuthService {
   constructor () {
     this.auth = axios.create({
@@ -8,6 +9,7 @@ class AuthService {
     });
   }
 
+  // Sign up
   signup = (user) => {
     const {
       firstName,
@@ -26,6 +28,7 @@ class AuthService {
       );
   }
 
+  // Login
   login = (user) => {
     const { email, password } = user;
     return this.auth
@@ -33,12 +36,14 @@ class AuthService {
       .then(({ data }) => data);
   }
 
+  // Logout
   logout = () => {
     return this.auth.post('/api/auth/logout', {}).then(
       ({ data }) => data
     );
   }
 
+  // Get current user's information
   me = () => {
     return this.auth.get('/api/auth/me').then(
       ({ data }) => data

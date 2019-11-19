@@ -10,7 +10,7 @@ const withAuth = (WrappedComponent) => {
       return (
         <Consumer>
           {
-            ({ login, signup, user, logout, isLoggedin }) => {
+            ({login, signup, user, logout, isLoggedin}) => {
               return (
                 <WrappedComponent
                   login = { login }
@@ -40,7 +40,7 @@ class AuthProvider extends Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount = () => {
     auth
       .me()
       .then(
@@ -61,6 +61,7 @@ class AuthProvider extends Component {
       );
   };
 
+  // Sign up
   signup = (user) => {
     const {
       firstName,
@@ -81,6 +82,7 @@ class AuthProvider extends Component {
       );
   };
 
+  // Login
   login = (user) => {
     const { email, password } = user;
     auth
@@ -89,6 +91,7 @@ class AuthProvider extends Component {
       .catch(err => console.log(err));
   };
 
+  // Logout
   logout = () => {
     auth
       .logout()
@@ -96,7 +99,7 @@ class AuthProvider extends Component {
       .catch(err => console.log(err));
   }
 
-  render () {
+  render = () => {
     const { isLoading, isLoggedin, user } = this.state;
     const { login, logout, signup } = this;
 

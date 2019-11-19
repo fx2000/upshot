@@ -22,6 +22,7 @@ class Projects extends Component {
   }
 
   componentDidMount () {
+    // Call projects list API
     projects.list().then(
       response => {
         const projects = response.data;

@@ -26,6 +26,7 @@ class Signup extends Component {
     };
   }
 
+  // Form submit handler
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
@@ -43,6 +44,7 @@ class Signup extends Component {
     });
   }
 
+  // Form change handler
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
@@ -64,6 +66,7 @@ class Signup extends Component {
         </Modal.Header>
 
         <Modal.Body>
+          { /* TODO: Center the logo with CSS */ }
           <Container>
             <Row className="show-grid">
               <Col xs={6} md={4}>
@@ -131,18 +134,12 @@ class Signup extends Component {
                 autoComplete="new-password"
               />
             </Form.Group>
-
+            { /* TODO: Implement this control */ }
             <Form.Group controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="I Agree to the terms and conditions" />
             </Form.Group>
 
-            {
-              errors && (
-                <Alert variant="danger" dismissible>
-                  <p>{ errors }</p>
-                </Alert>
-              )
-            }
+            {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
           </Form>
           <Link to="/login"><p>Already have an account? Sign in...</p></Link>
         </Modal.Body>

@@ -24,6 +24,7 @@ class Login extends Component {
     };
   }
 
+  // Form submit handler
   handleFormSubmit = (event) => {
     event.preventDefault();
     const {
@@ -37,6 +38,7 @@ class Login extends Component {
     });
   }
 
+  // Form change handler
   handleChange = (event) => {
     const { name, value } = event.target;
     this.setState({ [name]: value });
@@ -51,6 +53,7 @@ class Login extends Component {
         </Modal.Header>
 
         <Modal.Body>
+          { /* TODO: Center the logo with CSS */ }
           <Container>
             <Row className="show-grid">
               <Col xs={6} md={4}>
@@ -95,17 +98,12 @@ class Login extends Component {
               />
             </Form.Group>
 
+            {/* TODO: Implement this control */}
             <Form.Group controlId="rememberMe">
               <Form.Check type="checkbox" label="Remember Me" />
             </Form.Group>
 
-            {
-              errors && (
-                <Alert variant="danger" dismissible>
-                  <p>{ errors }</p>
-                </Alert>
-              )
-            }
+            {errors && (<Alert variant="danger" dismissible><p>{ errors }</p></Alert>)}
 
           </Form>
           <Link to="/signup"><p>Not a member? Sign up...</p></Link>
