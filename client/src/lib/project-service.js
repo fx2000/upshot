@@ -18,35 +18,37 @@ class ProjectService {
 
   // Create project
   create = (project) => {
-    const { name, description, file} = project;
+    const { name, description, imageURL} = project;
     return this.project
       .post('/api/projects/create', {
         name,
-        description
+        description,
+        imageURL
       }).then(
         response => response
       );
   }
 
-  // Update prject
+  // Update project
   update = (project) => {
     const {
       id,
       name,
-      description
+      description,
+      imageURL
     } = project;
     return this.project
       .put('/api/projects/' + id + '/update', {
         name,
-        description
+        description,
+        imageURL
       }).then(
         response => response
       );
   }
 
   // Delete project
-  delete = (project) => {
-    const { id } = project;
+  delete = (id) => {
     return this.project.get('/api/projects/' + id + '/delete').then(
       response => response
     );

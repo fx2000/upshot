@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import issues from '../../lib/issue-service';
+import users from '../../lib/user-service';
 import { withAuth } from '../../lib/AuthProvider';
 import { LinkContainer } from 'react-router-bootstrap';
 import IssueComments from '../../components/issue/IssueComments';
-import { Link } from 'react-router-dom';
+import Attachments from '../../components/issue/Attachments';
 
 // Bootstrap Components
 import {
@@ -12,20 +13,26 @@ import {
   Breadcrumb,
   Container,
   Row,
-  Button
+  Button,
+  ButtonGroup
 } from 'react-bootstrap';
 
 class ViewIssue extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      issue: ''
+      issue: '',
+      update: '',
+      following: '',
+      assigned: '',
+      user: ''
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    // Call issue details API
     const { id } = this.props.match.params;
-    issues.details(id).then(
+    await issues.details(id).then(
       response => {
         const issue = response.data;
         this.setState({
@@ -33,106 +40,152 @@ class ViewIssue extends Component {
         });
       }
     ).catch(error => console.log(error));
-    
+
+    // Call user details API
+    const userId = this.props.user._id;
+    await users.details(userId).then(
+      response => {
+        const user = response.data;
+        this.setState({
+          user: user
+        });
+      }
+    ).catch(error => console.log(error));
+
+    // Set state according to user's access to this issue
+    if (this.state.issue.creator._id === this.state.user._id) {
+      this.setState({
+        update: true
+      });
+    }
+    this.state.user.following.forEach(issue => {
+      if (issue._id === this.state.issue._id) {
+        this.setState({
+          following: true
+        });
+      }
+    });
+    this.state.user.assignedTo.forEach(issue => {
+      if (issue._id === this.state.issue._id) {
+        this.setState({
+          assigned: true
+        });
+      }
+    });
   }
 
   // Call follow issue API
-  followIssue = () => {
+  followIssue = async () => {
     const id = this.state.issue._id;
-    issues.follow({
+    await issues.follow({
       id
     });
+    this.setState(toggle => ({
+      following: !toggle.following
+    }));
   }
 
   // Call unfollow issue API
-  unfollowIssue = () => {
+  unfollowIssue = async () => {
     const id = this.state.issue._id;
-    issues.unfollow({
+    await issues.unfollow({
       id
     });
+    this.setState(toggle => ({
+      following: !toggle.following
+    }));
   }
 
   // Call takeover issue API
-  takeoverIssue = () => {
+  takeoverIssue = async () => {
     const id = this.state.issue._id;
-    issues.takeover({
+    await issues.takeover({
       id
     });
+    this.setState(toggle => ({
+      assigned: !toggle.assigned
+    }));
   }
 
   // Call release issue API
-  releaseIssue = () => {
+  releaseIssue = async () => {
     const id = this.state.issue._id;
-    issues.release({
+    await issues.release({
       id
     });
+    this.setState(toggle => ({
+      assigned: !toggle.assigned
+    }));
   }
 
-  render = () => {
-    // Check user properties to define button rendering
-    let update = false;
-    let following = false;
-    let assigned = false;
-    if (this.state.issue) {
-      if (this.props.user._id === this.state.issue.creator._id) { update = true }
-
-      this.props.user.following.forEach(issue => {
-        if (issue._id === this.state.issue._id) { following = true }
-      });
-
-      this.props.user.assignedTo.forEach(issue => {
-        if (issue._id === this.state.issue._id) { assigned = true }
-      });
-    }
-    
+  render = () => {   
     return (
-      <Container fluid={true}>
-        <Row>
-          <Breadcrumb>
-            <LinkContainer to="/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
-            <LinkContainer to="/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
-            <Breadcrumb.Item active>Issue Details</Breadcrumb.Item>
-          </Breadcrumb>
-        </Row>
-        <Row>
+      <Container fluid>
+        <Breadcrumb>
+          <LinkContainer to="/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
+          <LinkContainer to="/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
+          <Breadcrumb.Item active>Issue Details</Breadcrumb.Item>
+        </Breadcrumb>
+        <Row className="controls">
+          {/* Render buttons according to user's profile */}
           <h2>{this.state.issue.title}</h2>
+
+          <ButtonGroup aria-label="Actions">
+            {
+              // TODO: Add a confirmation message before deleting a record
+              this.state.issue && this.state.update ?
+                <Button variant="danger" onClick={() => issues.delete(this.props.match.params.id)}>Delete</Button> : null
+            }
+            {
+              this.state.issue && this.state.update ?
+                <LinkContainer to={'/issues/' + this.state.issue._id + '/update'}><Button variant="upshot">Update</Button></LinkContainer> : null
+            }
+            {
+              this.state.issue && this.state.following ?
+                <Button onClick={this.unfollowIssue} variant="upshot">Unfollow</Button> : <Button onClick={this.followIssue} variant="upshot">Follow</Button>
+            }
+            {
+              this.state.issue && this.state.assigned ?
+                <Button onClick={this.releaseIssue} variant="upshot">Release</Button> : <Button onClick={this.takeoverIssue} variant="upshot">Takeover</Button>
+            }
+          </ButtonGroup>
+          
         </Row>
-        {/* Render buttons according to user's profile */}
         <Row>
-          {
-            this.state.issue && update ?
-              <LinkContainer to={'/issues/' + this.state.issue._id + '/update'}><Button>Update</Button></LinkContainer> : null
-          }
-          {
-            this.state.issue && following ?
-              <Button onClick={this.unfollowIssue}>Unfollow</Button> : <Button onClick={this.followIssue}>Follow</Button>
-          }
-          {
-            this.state.issue && assigned ?
-              <Button onClick={this.releaseIssue}>Release</Button> : <Button onClick={this.takeoverIssue}>Takeover</Button>
-          }
-        </Row>
-        <Row>
-          <Container fluid={true}>
+          <Container fluid>
             <Tabs defaultActiveKey="details" id="uncontrolled-tab-example" className="details">
               <Tab eventKey="details" title="Details">
-                <Container fluid={true} className="issue-details">
+                <Container fluid className="issue-details">
                   <Row>
                     {this.state.issue.content}
+                  </Row>
+                  <Row>
+                    <Container className="attachments">
+                      {
+                        this.state.issue.attachments &&
+                        this.state.issue.attachments.map((attachment, index) =>
+                          <Attachments
+                            key = { index }
+                            attachment = { attachment }
+                          />
+                        )
+                      }
+                    </Container>
                   </Row>
                 </Container>
               </Tab>
               <Tab eventKey="comments" title="Comments">
-                <Container fluid={true} className="issue-details">
+                <Container fluid className="issue-details">
                   <Row>
                     <LinkContainer to={'/issues/' + this.state.issue._id + '/comment'}>
-                      <Button>Post New Comment</Button>
+                      <Button variant="upshot">Post New Comment</Button>
                     </LinkContainer>
                   </Row>
                   <Row>
-                    <Container fluid={true} className="comments">
+                    <Container fluid className="comments">
                       {
-                        this.state.issue.comments && this.state.issue.comments.map((comment, index) =>
+                        this.state.issue.comments &&
+                        this.state.issue.comments.map((comment, index) =>
                           <IssueComments
                             key = { index }
                             id = { comment._id }
@@ -140,6 +193,7 @@ class ViewIssue extends Component {
                             commenterName = { comment.user.firstName + ' ' + comment.user.lastName}
                             avatar = { comment.user.avatar }
                             content = { comment.content }
+                            created = { comment.relativeDate }
                           />
                         )
                       }

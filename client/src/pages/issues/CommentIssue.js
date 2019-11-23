@@ -10,7 +10,7 @@ import {
   Alert,
   Breadcrumb,
   Container,
-  Row
+  Modal
 } from 'react-bootstrap';
 
 class CommentIssue extends Component {
@@ -18,19 +18,33 @@ class CommentIssue extends Component {
     super(props);
     this.state = {
       issue: this.props.match.params.id,
+      issueDetails: '',
       content: '',
       errors: ''
     };
   }
 
-  handleFormSubmit = (event) => {
+  componentDidMount = () => {
+    // Call issue details API
+    const { id } = this.props.match.params;
+    issues.details(id).then(
+      response => {
+        const issue = response.data;
+        this.setState({
+          issueDetails: issue
+        });
+      }
+    ).catch(error => console.log(error));
+  }
+
+  handleFormSubmit = async (event) => {
     event.preventDefault();
     const {
       issue,
       content
     } = this.state;
 
-    issues.comment({
+    await issues.comment({
       issue,
       content
     });
@@ -38,7 +52,6 @@ class CommentIssue extends Component {
     this.setState({
       content: ''
     });
-    // TODO: Fix redirect so it refreshes
     this.props.history.push('/issues/' + this.state.issue);
   }
 
@@ -54,37 +67,42 @@ class CommentIssue extends Component {
     } = this.state;
 
     return (
-      <Container fluid = { true }>
-        <Row>
-          <Breadcrumb>
-            <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
-            <LinkContainer to = "/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
-            <Breadcrumb.Item active>Post Comment</Breadcrumb.Item>
-          </Breadcrumb>
-        </Row>
-        <Row>
-          <h2>Post Comment</h2>
-        </Row>
-        <Row>
-          <Form onSubmit = { this.handleFormSubmit }>
-            <Form.Group controlId = "content" >
-              <Form.Label>Comment</Form.Label>
-              <Form.Control
-                type = "text"
-                name = "content"
-                value = { content }
-                onChange = { this.handleChange }
-                required
-              />
-            </Form.Group>
+      <Container fluid>
+        <Breadcrumb>
+          <LinkContainer to = "/"><Breadcrumb.Item>Home</Breadcrumb.Item></LinkContainer>
+          <LinkContainer to = "/issues"><Breadcrumb.Item>Issues</Breadcrumb.Item></LinkContainer>
+    <LinkContainer to = {'/issues/' + this.props.match.params.id}><Breadcrumb.Item>{this.state.issueDetails.title}</Breadcrumb.Item></LinkContainer>
+          <Breadcrumb.Item active>Post Comment</Breadcrumb.Item>
+        </Breadcrumb>
+        
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Title>Post Comment</Modal.Title>
+          </Modal.Header>
 
-            {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
+          <Modal.Body>
+            <Form onSubmit = { this.handleFormSubmit } id="comment">
+              <Form.Group controlId = "content" >
+                <Form.Label>Comment</Form.Label>
+                <Form.Control
+                  as = "textarea"
+                  rows = "10"
+                  name = "content"
+                  value = { content }
+                  onChange = { this.handleChange }
+                  required
+                />
+              </Form.Group>
 
-            <Button variant="primary" type="submit" disabled = {!content}>
-              Submit
-            </Button>
-          </Form>
-        </Row>
+              {errors && (<Alert variant="danger" dismissible><p>{errors}</p></Alert>)}
+
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <LinkContainer to={'/issues/' + this.props.match.params.id}><Button variant="primary" size="sm">Cancel</Button></LinkContainer>
+            <Button variant="upshot" size="sm" type="submit" form="comment" disabled={!content}>Submit</Button>
+          </Modal.Footer>
+        </Modal.Dialog>
       </Container>
     );
   }

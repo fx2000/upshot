@@ -22,14 +22,16 @@ class IssueService {
       title,
       content,
       project,
-      priority
+      priority,
+      attachments
     } = issue;
     return this.issue
       .post('/api/issues/create', {
         title,
         content,
         project,
-        priority
+        priority,
+        attachments
       }).then(
         response => response
       );
@@ -43,7 +45,8 @@ class IssueService {
       content,
       project,
       priority,
-      status
+      status,
+      attachments
     } = issue;
     return this.issue
       .put('/api/issues/' + id + '/update', {
@@ -51,15 +54,15 @@ class IssueService {
         content,
         project,
         priority,
-        status
+        status,
+        attachments
       }).then(
         response => response
       );
   }
 
   // Delete issue
-  delete = (issue) => {
-    const { id } = issue;
+  delete = (id) => {
     return this.issue.get('/api/issues/' + id + '/delete').then(
       response => response
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { withAuth } from '../../lib/AuthProvider';
+import { Link } from 'react-router-dom';
 
 // Bootstrap components
 import {
@@ -17,8 +18,8 @@ const IssueComments = (props) => {
           width = "30"
           height = "30"
         />
-        <strong className="mr-auto">{ props.commenterName }</strong>
-        <small>11 mins ago</small>
+        <strong className="mr-auto"><Link to={'/users/' + props.commenterId}>{ props.commenterName }</Link></strong>
+        <small>{ props.created }</small>
       </Toast.Header>
       <Toast.Body>{ props.content }</Toast.Body>
     </Toast>
