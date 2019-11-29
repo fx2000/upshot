@@ -22,7 +22,7 @@ Upshot is an Issue Tracking System for software development teams. It allows use
 
   
 
-**upshot** was developed as a single-page application using React for the front-end and NodeJS/ExpressJS for the back-end. It was developed as a Module 3 project for the Ironhack Coding Bootcamp.
+**upshot** was developed as a single-page application using React for the front-end and NodeJS/ExpressJS for the back-end.
 
 
 ### Models
