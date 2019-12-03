@@ -3,12 +3,6 @@
 
 ![alt text](https://upshot-its.web.app/assets/img/arrow.png)
 
-
-**_noun_**  
-
-the final or eventual outcome or conclusion of a discussion, action, or series of events.
-
-
 ## What is upshot?
 
 
